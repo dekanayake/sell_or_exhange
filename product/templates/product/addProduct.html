@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+
+{% block title %}
+Add product
+
+{% endblock %}
+
+{% block content %}
+
+<div class="panel panel-default" xmlns="http://www.w3.org/1999/html">
+    <div class="panel-body">
+
+        <h4><span class="label label-pill  label-success ">1</span> Choose a category</h4>
+
+        {% if selectedCategory %}
+        {{selectedCategory}} <a href="/products/selectCategory/{{ selectedCategory.parentCategory.id }}"> <i class="fa fa-pencil" aria-hidden="true"></i></a>
+        {% endif %}
+
+
+
+    </div>
+</div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+
+        <h4><span class="label label-pill  label-warning ">1</span> Information of the add</h4>
+
+        <div class="panel-body">
+
+         <form  action="/file-upload" id="myDropzone" >
+             <fieldset class="form-group">
+                 {{form.title.label_tag}}
+                 {{ form.title|attr:"class:form-control"|attr:"placeholder:Add title" }}
+             </fieldset>
+
+             <fieldset class="form-group">
+                 <label>Pictures</label>
+
+                 <div id="dropZone" >
+                 
+                 </div>
+
+             </fieldset>
+
+             {% for feature, uiElements  in form.featureElements.items %}
+
+             <div class="panel panel-default">
+                 <div class="panel-heading">{{feature}}</div>
+                 <div class="panel-body">
+                     {% for uiElement in form %}
+
+                         {% if uiElement.html_name in uiElements %}
+                            {% if uiElement.html_name in form.choiceElements%}
+                                 <div class="checkbox">
+                                     <label>
+                                         {{uiElement }}
+                                         {{uiElement.label}}
+                                     </label>
+                                 </div>
+                            {% else %}
+                                <fieldset class="form-group">
+                                    {{uiElement.label_tag}}
+                                    {{uiElement |attr:"class:form-control"}}
+                                </fieldset>
+                            {% endif %}
+                         {% endif %}
+                     {% endfor %}
+
+                 {% endfor %}
+              </div>
+         </div>
+
+
+             <input type="submit" id="submit">Submit</input>
+         </form>
+
+
+
+        </div>
+
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var myDropzone = new Dropzone("div#dropZone", { url: "/file/post"});
+
+</script>
+
+
+
+{% endblock %}

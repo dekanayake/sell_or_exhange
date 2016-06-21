@@ -1,0 +1,22 @@
+{
+  "name": "buy_or_exchange",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "dropzone": "^4.3.0",
+    "font-awesome": "^4.6.3"
+  },
+  "devDependencies": {
+    "bootstrap": "^3.3.6",
+    "gulp": "^3.9.1",
+    "jquery": "2.2.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "copy": "gulp copy-dependencies",
+    "install": "gulp copy-dependencies"
+  },
+  "author": "",
+  "license": "ISC"
+}
