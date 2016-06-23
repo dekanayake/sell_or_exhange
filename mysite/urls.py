@@ -10,4 +10,5 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^products/', include('product.urls')),
+    url(r'^summernote/', include('django_summernote.urls')),
 )

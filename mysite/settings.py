@@ -38,7 +38,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'widget_tweaks'
+    'widget_tweaks',
+    'django_summernote'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -90,5 +91,18 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "vendor"),
     os.path.join(BASE_DIR, "static")
 ]
+
+
+SUMMERNOTE_CONFIG = {
+    # Customize toolbar buttons
+    'toolbar': [
+        ['style', ['bold', 'italic', 'underline', 'clear']],
+        ['font', ['strikethrough', 'superscript', 'subscript']],
+        ['fontsize', ['fontsize']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['height', ['height']]
+    ],
+}
 
 

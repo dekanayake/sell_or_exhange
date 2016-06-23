@@ -1,4 +1,6 @@
 from django.db import models
+import moneyed
+from djmoney.models.fields import MoneyField
 
 
 # Create your models here.
@@ -44,6 +46,7 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10,decimal_places=2,null=True, blank=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, null=True)
+    model = models.CharField(max_length=100, null=True)
     negotiable = models.BooleanField(default=False)
     exchangeable = models.BooleanField(default=False)
 
@@ -57,7 +60,9 @@ class ProductAttribute(models.Model):
     PRODUCT_ATTRIBUTE_TYPES = (
         ('SELECT','SELECT'),
         ('CHECKBOX','CHECKBOX'),
-        ('RADIO','RADIO')
+        ('RADIO','RADIO'),
+        ('TEXT','TEXT'),
+        ('NUMBER','NUMBER')
     )
     name = models.CharField(max_length=100)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -65,6 +70,7 @@ class ProductAttribute(models.Model):
     type = models.CharField(max_length=100,choices=PRODUCT_ATTRIBUTE_TYPES)
     group = models.CharField(max_length=200, null=True, blank=True)
     selectValues = models.ManyToManyField(SelectProductAttributeValues,blank=True)
+    required = models.BooleanField()
     def __str__(self):
         return ' :: '.join([self.category.getCategoryLabel(), self.name])
 

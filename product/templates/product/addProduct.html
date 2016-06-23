@@ -31,51 +31,192 @@ Add product
 
         <div class="panel-body">
 
-         <form  action="/file-upload" id="myDropzone" >
-             <fieldset class="form-group">
-                 {{form.title.label_tag}}
-                 {{ form.title|attr:"class:form-control"|attr:"placeholder:Add title" }}
-             </fieldset>
+         <form   class="form-horizontal">
 
-             <fieldset class="form-group">
-                 <label>Pictures</label>
+             <div class="form-group required">
+                 <label  class="col-sm-2 control-label">{{form.condition.label}}</label>
 
-                 <div id="dropZone" >
-                 
+                 <div class="col-sm-2">
+                     {{ form.condition|attr:"class:form-control" }}
                  </div>
+             </div>
 
-             </fieldset>
+             <div class="form-group required">
+                 <label  class="col-sm-2 control-label">{{form.title.label}}</label>
+
+                 <div class="col-sm-10">
+                     {{ form.title|attr:"class:form-control"|attr:"placeholder:Add title" }}
+                 </div>
+             </div>
+
+             <div class="form-group">
+                 <label  class="col-sm-2 control-label">{{form.brand.label}}</label>
+
+                 <div class="col-sm-2">
+                     {{ form.brand|attr:"class:form-control" }}
+                 </div>
+             </div>
+
+             <div class="form-group">
+                 <label  class="col-sm-2 control-label">{{form.model.label}}</label>
+
+                 <div class="col-sm-3">
+                     {{ form.model|attr:"class:form-control" }}
+                 </div>
+             </div>
 
              {% for feature, uiElements  in form.featureElements.items %}
 
-             <div class="panel panel-default">
-                 <div class="panel-heading">{{feature}}</div>
-                 <div class="panel-body">
-                     {% for uiElement in form %}
 
-                         {% if uiElement.html_name in uiElements %}
-                            {% if uiElement.html_name in form.choiceElements%}
-                                 <div class="checkbox">
-                                     <label>
-                                         {{uiElement }}
-                                         {{uiElement.label}}
-                                     </label>
-                                 </div>
-                            {% else %}
-                                <fieldset class="form-group">
-                                    {{uiElement.label_tag}}
-                                    {{uiElement |attr:"class:form-control"}}
-                                </fieldset>
-                            {% endif %}
-                         {% endif %}
-                     {% endfor %}
+             {% for uiElement in form %}
 
-                 {% endfor %}
+             {% if uiElement.html_name in uiElements %}
+             <div class="form-group {% if uiElement.field.required  %} required {% endif %}">
+                 {% if uiElement.html_name in form.choiceElements%}
+                 <label class="col-sm-2 control-label">  {{uiElement.label}}</label>
+                 <div class="col-sm-6">
+                     <div class="row">
+
+                             {% for choice in uiElement.field.choices %}
+                         <div class="col-sm-3">
+                             <div class="checkbox">
+                                 <label>
+                                     <input type="checkbox" name="{{ uiElement.field.html_name }}" {% if choice.0 in uiElement.value %} checked="checked" {% endif %} id="id_{{ uiElement.field.html_name }}_{{ forloop.counter }}" value="{{choice.0}}">
+                                     {{choice.1}}
+                                 </label>
+                             </div>
+                         </div>
+                             {% endfor %}
+
+                     </div>
+
+                 </div>
+                 {% elif uiElement.html_name in form.radioElements %}
+                 <label class="col-sm-2 control-label">  {{uiElement.label}}</label>
+                 <div class="col-sm-6">
+
+
+                         {% for choice in uiElement.field.choices %}
+
+
+                                 <label class="radio-inline">
+                                     <input type="radio" name="{{ uiElement.field.html_name }}" {% if choice.0 in uiElement.value %} checked="checked" {% endif %} id="id_{{ uiElement.field.html_name }}_{{ forloop.counter }}" value="{{choice.0}}">
+                                     {{choice.1}}
+                                 </label>
+
+
+                         {% endfor %}
+
+                 </div>
+                 {% else %}
+
+                 <label class="col-sm-2 control-label">  {{uiElement.label}}</label>
+                 <div class="col-sm-2">
+                     {{uiElement |attr:"class:form-control"}}
+                 </div>
+                 {% endif %}
+
+
+             </div>
+             {% endif %}
+             {% endfor %}
+
+             {% endfor %}
+
+
+             <div class="form-group required">
+                 <label  class="col-sm-2 control-label">{{form.description.label}}</label>
+
+                 <div class="col-sm-10">
+                     {{ form.description }}
+                 </div>
+             </div>
+
+
+
+             <div class="form-group">
+                 <label  class="col-sm-2 control-label">Images</label>
+
+                 <div class="col-sm-10">
+
+                     <input id="upload" type="button" value="Upload" class="btn btn-primary" >
+                 </div>
               </div>
-         </div>
+
+             <div class="form-group">
+                     <div class="container">
 
 
-             <input type="submit" id="submit">Submit</input>
+                         <div  id="previews" class="row">
+
+
+
+                             <div class="col-md-2" id="template" >
+                                 <div class="well">
+                                     <img data-dz-thumbnail class="img-thumbnail center-block"/>
+                                     <div class="text-right">
+                                         <button data-dz-remove class="btn btn-sml btn-danger"> <i class="fa fa-times" aria-hidden="true"></i></button>
+                                     </div>
+                                 </div>
+
+                             </div>
+
+
+
+                         </div>
+
+                     </div>
+
+                 </div>
+
+             <div class="form-group">
+                 <label  class="col-sm-2 control-label">{{form.price.label}}</label>
+
+                 <div class="col-sm-2">
+                     <div class="input-group">
+                         <div class="input-group-addon">Rs</div>
+                         {{ form.price|attr:"class:form-control"|attr:"placeholder:Amount" }}
+                     </div>
+                 </div>
+             </div>
+
+
+
+             <div class="form-group">
+                 <div class="col-sm-offset-2 col-sm-10">
+                     <div class="checkbox">
+                         <label>
+                             {{ form.negotiable}}
+                             {{form.negotiable.label}}
+                         </label>
+                     </div>
+                 </div>
+             </div>
+
+             <div class="form-group">
+                 <div class="col-sm-offset-2 col-sm-3">
+                     <div >
+                         <div class="checkbox">
+                         <label>
+                             {{ form.exchangeable}}
+                             {{form.exchangeable.label}}
+                         </label>
+                             </div>
+                     </div>
+                 </div>
+             </div>
+
+
+
+
+
+             <div class="form-group">
+                 <div class="col-sm-offset-2 col-sm-3">
+                     <button type="submit" class="btn btn-primary">Save</button>
+                 </div>
+             </div>
+
+
          </form>
 
 
@@ -88,7 +229,31 @@ Add product
 
 <script type="text/javascript">
 
-    var myDropzone = new Dropzone("div#dropZone", { url: "/file/post"});
+
+$(document).ready(function(){
+
+
+        // Get the template HTML and remove it from the doumenthe template HTML and remove it from the doument
+        var previewNode = document.querySelector("#template");
+        previewNode.id = "";
+        var previewTemplate = previewNode.parentNode.innerHTML;
+        previewNode.parentNode.removeChild(previewNode);
+
+        var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
+          url: "/target-url", // Set the url
+          thumbnailWidth: 240,
+          thumbnailHeight: 240,
+          parallelUploads: 10,
+          previewTemplate: previewTemplate,
+          autoQueue: false, // Make sure the files aren't queued until manually added
+          previewsContainer: "#previews", // Define the container to display the previews
+          clickable: "#upload" // Define the element that should be used as click trigger to select files.
+        });
+
+
+});
+
+
 
 </script>
 
