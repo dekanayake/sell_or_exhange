@@ -1,0 +1,13 @@
+{% if error_messages %}
+<div class="row">
+    <div class="col-sm-12">
+                                <span id="helpBlock" class="help-block">
+                                        <ul>
+                                            {% for error in error_messages %}
+                                            <li><strong>{{ error|escape }}</strong></li>
+                                            {% endfor %}
+                                        </ul>
+                                 </span>
+    </div>
+</div>
+{% endif %}

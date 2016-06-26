@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from .models import Category
 from .forms import ProductForm
+import logging
 
 
 
@@ -26,14 +27,28 @@ def select_category(request,category_id="-1"):
     if (categoryChildExists):
         return render(request, 'product/selectCategory.html', {'categoryList': categoryList,'selectedCategory':selectedCategory,'noChild':noChild})
     else:
-        return redirect('show_add_product', selected_category_id = category_id)
+        return redirect('add_product', selected_category_id = category_id)
 
 
-def show_add_product(request,selected_category_id):
+def add_product(request,selected_category_id):
     selected_category_long_id = long(selected_category_id)
-    productForm =  ProductForm(category=selected_category_long_id)
-    selectedCategory = Category.objects.get(pk= selected_category_long_id)
-    return render(request, 'product/addProduct.html', {'selectedCategory':selectedCategory,'form':productForm})
+    if request.method == 'POST':
+        form = ProductForm(data=request.POST,category=selected_category_long_id)
+        selectedCategory = Category.objects.get(pk= selected_category_long_id)
+        logging.warn('----------------------calld post')
+        if form.is_valid():
+            logging.warn('form is valid')
+        else:
+            logging.warn("There are errors")
+        return render(request, 'product/addProduct.html', {'selectedCategory':selectedCategory,'form':form})
+
+    else:
+        productForm =  ProductForm(category=selected_category_long_id)
+        selectedCategory = Category.objects.get(pk= selected_category_long_id)
+        return render(request, 'product/addProduct.html', {'selectedCategory':selectedCategory,'form':productForm})
+
+
+
 
 
 

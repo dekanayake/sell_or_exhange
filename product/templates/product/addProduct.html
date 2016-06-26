@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load widget_tweaks %}
+{% load common_tags %}
 
 
 {% block title %}
@@ -24,6 +25,7 @@ Add product
 </div>
 </div>
 
+
 <div class="panel panel-default">
     <div class="panel-body">
 
@@ -31,37 +33,62 @@ Add product
 
         <div class="panel-body">
 
-         <form   class="form-horizontal">
+         <form   class="form-horizontal" action="/products/addProduct/{{selectedCategory.id}}" method="post">
+             {% csrf_token %}
 
-             <div class="form-group required">
+             <div class="form-group required {% if form.condition.errors%} has-error {% endif %}">
+
                  <label  class="col-sm-2 control-label">{{form.condition.label}}</label>
 
                  <div class="col-sm-2">
-                     {{ form.condition|attr:"class:form-control" }}
+                     <div class="row">
+                         <div class="col-sm-12">
+                         {{ form.condition|attr:"class:form-control" }}
+                         </div>
+                     </div>
+                     {% errors form.condition.errors %}
                  </div>
+
+
+
              </div>
 
-             <div class="form-group required">
+             <div class="form-group required {% if form.title.errors%} has-error {% endif %}">
                  <label  class="col-sm-2 control-label">{{form.title.label}}</label>
 
                  <div class="col-sm-10">
+                     <div class="row">
+                         <div class="col-sm-12">
                      {{ form.title|attr:"class:form-control"|attr:"placeholder:Add title" }}
+                         </div>
+                     </div>
+                     {% errors form.title.errors %}
                  </div>
              </div>
 
-             <div class="form-group">
+             <div class="form-group {% if form.brand.errors%} has-error {% endif %}">
                  <label  class="col-sm-2 control-label">{{form.brand.label}}</label>
 
                  <div class="col-sm-2">
+                     <div class="row">
+                         <div class="col-sm-12">
                      {{ form.brand|attr:"class:form-control" }}
+                             </div>
+                         </div>
+                     {% errors form.brand.errors %}
                  </div>
              </div>
 
-             <div class="form-group">
+             <div class="form-group {% if form.model.errors%} has-error {% endif %}">
                  <label  class="col-sm-2 control-label">{{form.model.label}}</label>
 
                  <div class="col-sm-3">
+                     <div class="row">
+                         <div class="col-sm-12">
                      {{ form.model|attr:"class:form-control" }}
+                             </div>
+                         </div>
+                     {% errors form.model.errors %}
                  </div>
              </div>
 
@@ -71,7 +98,7 @@ Add product
              {% for uiElement in form %}
 
              {% if uiElement.html_name in uiElements %}
-             <div class="form-group {% if uiElement.field.required  %} required {% endif %}">
+             <div class="form-group {% if uiElement.field.required  %} required {% endif %} {% if uiElement.errors%} has-error {% endif %}">
                  {% if uiElement.html_name in form.choiceElements%}
                  <label class="col-sm-2 control-label">  {{uiElement.label}}</label>
                  <div class="col-sm-6">
@@ -81,7 +108,7 @@ Add product
                          <div class="col-sm-3">
                              <div class="checkbox">
                                  <label>
-                                     <input type="checkbox" name="{{ uiElement.field.html_name }}" {% if choice.0 in uiElement.value %} checked="checked" {% endif %} id="id_{{ uiElement.field.html_name }}_{{ forloop.counter }}" value="{{choice.0}}">
+                                     <input type="checkbox" name="{{ uiElement.html_name }}" {% if choice.0 in uiElement.value %} checked="checked" {% endif %} id="id_{{ uiElement.html_name }}_{{ forloop.counter }}" value="{{choice.0}}">
                                      {{choice.1}}
                                  </label>
                              </div>
@@ -89,30 +116,39 @@ Add product
                              {% endfor %}
 
                      </div>
-
+                       {% errors uiElement.errors %}
                  </div>
                  {% elif uiElement.html_name in form.radioElements %}
                  <label class="col-sm-2 control-label">  {{uiElement.label}}</label>
                  <div class="col-sm-6">
-
+                        <div class="row">
+                            <div class="col-sm-12">
 
                          {% for choice in uiElement.field.choices %}
 
 
                                  <label class="radio-inline">
-                                     <input type="radio" name="{{ uiElement.field.html_name }}" {% if choice.0 in uiElement.value %} checked="checked" {% endif %} id="id_{{ uiElement.field.html_name }}_{{ forloop.counter }}" value="{{choice.0}}">
+                                     <input type="radio" name="{{ uiElement.html_name }}" {% if choice.0 in uiElement.value %} checked="checked" {% endif %} id="id_{{ uiElement.html_name }}_{{ forloop.counter }}" value="{{choice.0}}">
                                      {{choice.1}}
                                  </label>
 
 
                          {% endfor %}
+                         </div>
+                        </div>
+                     {% errors uiElement.errors %}
 
                  </div>
                  {% else %}
 
                  <label class="col-sm-2 control-label">  {{uiElement.label}}</label>
                  <div class="col-sm-2">
+                     <div class="row">
+                         <div class="col-sm-12">
                      {{uiElement |attr:"class:form-control"}}
+                             </div>
+                         </div>
+                     {% errors uiElement.errors %}
                  </div>
                  {% endif %}
 
@@ -124,11 +160,16 @@ Add product
              {% endfor %}
 
 
-             <div class="form-group required">
+             <div class="form-group required {% if form.description.errors%} has-error {% endif %}">
                  <label  class="col-sm-2 control-label">{{form.description.label}}</label>
 
                  <div class="col-sm-10">
+                     <div class="row">
+                         <div class="col-sm-12">
                      {{ form.description }}
+                             </div>
+                         </div>
+                     {% errors form.description.errors %}
                  </div>
              </div>
 
