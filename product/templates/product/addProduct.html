@@ -33,7 +33,7 @@ Add product
 
         <div class="panel-body">
 
-         <form   class="form-horizontal" action="/products/addProduct/{{selectedCategory.id}}" method="post">
+         <form   class="form-horizontal" action="/products/addProduct/{{selectedCategory.id}}" method="post" enctype="multipart/form-data" id="productForm">
              {% csrf_token %}
 
              <div class="form-group required {% if form.condition.errors%} has-error {% endif %}">
@@ -178,10 +178,20 @@ Add product
              <div class="form-group">
                  <label  class="col-sm-2 control-label">Images</label>
 
-                 <div class="col-sm-10">
+                 <div class="col-sm-2">
 
                      <input id="upload" type="button" value="Upload" class="btn btn-primary" >
+
                  </div>
+
+                 <div class="col-sm-6 hidden" id="image-container">
+                     <div class="progress">
+                         <div class="progress-bar progress-bar-striped active" id="total_progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+
+                         </div>
+                     </div>
+                 </div>
+
               </div>
 
              <div class="form-group">
@@ -193,8 +203,8 @@ Add product
 
 
                              <div class="col-md-2" id="template" >
-                                 <div class="well">
-                                     <img data-dz-thumbnail class="img-thumbnail center-block"/>
+                                 <div class="well" >
+                                         <img data-dz-thumbnail class="img-thumbnail center-block"/>
                                      <div class="text-right">
                                          <button data-dz-remove class="btn btn-sml btn-danger"> <i class="fa fa-times" aria-hidden="true"></i></button>
                                      </div>
@@ -202,9 +212,6 @@ Add product
 
                              </div>
 
-
-
-                         </div>
 
                      </div>
 
@@ -253,7 +260,7 @@ Add product
 
              <div class="form-group">
                  <div class="col-sm-offset-2 col-sm-3">
-                     <button type="submit" class="btn btn-primary">Save</button>
+                     <button type="submit" class="btn btn-primary" id="submitButton">Save</button>
                  </div>
              </div>
 
@@ -271,6 +278,8 @@ Add product
 <script type="text/javascript">
 
 
+
+
 $(document).ready(function(){
 
 
@@ -281,18 +290,59 @@ $(document).ready(function(){
         previewNode.parentNode.removeChild(previewNode);
 
         var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
-          url: "/target-url", // Set the url
+          url: "/products/productImages/{{randomNumber}}", // Set the url
           thumbnailWidth: 240,
+          uploadMultiple: true,
           thumbnailHeight: 240,
-          parallelUploads: 10,
+          parallelUploads: 50,
           previewTemplate: previewTemplate,
-          autoQueue: false, // Make sure the files aren't queued until manually added
+          autoProcessQueue: true, // Make sure the files aren't queued until manually added
           previewsContainer: "#previews", // Define the container to display the previews
-          clickable: "#upload" // Define the element that should be used as click trigger to select files.
+          clickable: "#upload", // Define the element that should be used as click trigger to select files.
+          headers: { 'X-CSRFToken': $("input[name='csrfmiddlewaretoken']" ).val()},
+          renameFilename: function (filename) {
+            return Math.random().toString(36).substring(7) + '_' + filename;
+           }
         });
+
+         myDropzone.on("sendingmultiple", function() {
+                $('#total_progress').width("0%");
+                $('#image-container').toggleClass('hidden');
+           });
+
+
+           myDropzone.on("totaluploadprogress", function(progress) {
+                $('#total_progress').width(progress + "%");
+           });
+
+           myDropzone.on("successmultiple", function(files, response) {
+             for (i = 0; i < files.length; i++) {
+                        $(files[i].previewTemplate).data('server_file', response[i])
+                 }
+               $('#image-container').toggleClass('hidden');
+           });
+
+           myDropzone.on("removedfile", function(file) {
+                var server_file = $(file.previewTemplate).data('server_file');
+                $.ajax({
+                    type: 'POST',
+                    url: '/products/productImages/{{randomNumber}}',
+                    data: { fileName: server_file },
+                    success: function() {
+
+                    },
+                    headers: {
+                        'X-CSRFToken': $("input[name='csrfmiddlewaretoken']" ).val(),
+                        'X-METHODOVERRIDE': 'DELETE'
+                        }
+                });
+           });
+
 
 
 });
+
+
 
 
 

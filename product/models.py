@@ -1,6 +1,9 @@
 from django.db import models
 import moneyed
 from djmoney.models.fields import MoneyField
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+import os
 
 
 # Create your models here.
@@ -50,10 +53,23 @@ class Product(models.Model):
     negotiable = models.BooleanField(default=False)
     exchangeable = models.BooleanField(default=False)
 
+
+
 class SelectProductAttributeValues(models.Model):
     name = models.CharField(max_length=200)
     def __str__(self):
         return  self.name
+
+def generate_temp_image_filename(instance, filename):
+    url = "images/tempory/%s/%s" % (instance.key, filename)
+    return url
+
+
+class TemporyProductImage(models.Model):
+    key = models.CharField(max_length=150)
+    fileName = models.CharField(max_length=150)
+    image = models.FileField(upload_to=generate_temp_image_filename)
+
 
 
 class ProductAttribute(models.Model):
@@ -101,3 +117,15 @@ class ExchanableProductCriteria(models.Model):
 class ExchangeableProductCandidates(models.Model):
     product = models.ForeignKey(ExchangeableProduct, on_delete=models.CASCADE)
     exchangeProduct = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+
+@receiver(post_delete, sender=TemporyProductImage)
+def photo_post_delete_handler(sender, **kwargs):
+    productImage = kwargs['instance']
+    storage, path = productImage.image.storage, productImage.image.path
+    storage.delete(path)
+
+    parentPath = "images/tempory/%s" % (productImage.key)
+    if not os.listdir(parentPath):
+        os.rmdir(parentPath)
+

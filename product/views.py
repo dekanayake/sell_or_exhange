@@ -1,10 +1,13 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from .models import Category
+from .models import TemporyProductImage
 from .forms import ProductForm
 import logging
-
-
+from django.http import HttpResponse
+import random
+from django.core.files.base import ContentFile
+from django.http import JsonResponse
 
 
 # Create your views here.
@@ -31,13 +34,16 @@ def select_category(request,category_id="-1"):
 
 
 def add_product(request,selected_category_id):
+    random_number = random.getrandbits(128)
     selected_category_long_id = long(selected_category_id)
     if request.method == 'POST':
         form = ProductForm(data=request.POST,category=selected_category_long_id)
+        files = request.FILES.getlist('file')
         selectedCategory = Category.objects.get(pk= selected_category_long_id)
         logging.warn('----------------------calld post')
         if form.is_valid():
             logging.warn('form is valid')
+            logging.warn(files)
         else:
             logging.warn("There are errors")
         return render(request, 'product/addProduct.html', {'selectedCategory':selectedCategory,'form':form})
@@ -45,7 +51,28 @@ def add_product(request,selected_category_id):
     else:
         productForm =  ProductForm(category=selected_category_long_id)
         selectedCategory = Category.objects.get(pk= selected_category_long_id)
-        return render(request, 'product/addProduct.html', {'selectedCategory':selectedCategory,'form':productForm})
+        return render(request, 'product/addProduct.html', {'selectedCategory':selectedCategory,'form':productForm,'randomNumber':random_number})
+
+def product_images(request,random_number):
+
+    if request.method == 'POST':
+        fileNameArray = []
+        for index in range(0, 9):
+            files = request.FILES.getlist("file[{}]".format(index))
+            for file in files:
+               tmpFile =   TemporyProductImage()
+               tmpFile.key =  random_number
+               tmpFile.fileName = file.name
+               tmpFile.image.save(file.name,ContentFile(file.read()), save=True )
+               fileNameArray.append(file.name)
+        return  JsonResponse(fileNameArray, safe=False)
+    elif request.method == 'DELETE':
+        fileNameToDelete = request.DELETE['fileName']
+        logging.warn(fileNameToDelete)
+        TemporyProductImage.objects.get(key=random_number,fileName=fileNameToDelete).delete()
+        return HttpResponse(status=200)
+
+
 
 
 
