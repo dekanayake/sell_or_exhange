@@ -1,4 +1,4 @@
-**This is the project for the sell or exchange Instructions****
+**This is the project for the sell or exchange Instructions**
 
 **
 Installing PIL**
