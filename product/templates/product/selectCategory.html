@@ -7,10 +7,12 @@ Add product
 
 {% block content %}
 
-<div class="panel panel-default">
-    <div class="panel-body">
+
+<div class="card">
+    <div class="card-block">
 
         <h4><span class="label label-pill {% if noChild %} label-warning {% else %}  label-success {% endif%}">1</span> Choose a category</h4>
+
 
         {% if selectedCategory %}
         {{selectedCategory}} <a href="/products/selectCategory/{{ selectedCategory.parentCategory.id }}"> <i class="fa fa-pencil" aria-hidden="true"></i></a>
@@ -27,12 +29,12 @@ Add product
         </ul>
 
 
-        </div>
+
     </div>
 </div>
 
-<div class="panel panel-default">
-    <div class="panel-body">
+<div class="card">
+    <div class="card-block">
 
         <h4><span class="label label-pill  label-warning ">1</span> Information of the add</h4>
 

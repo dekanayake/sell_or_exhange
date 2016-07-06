@@ -1,0 +1,54 @@
+
+
+
+    <div class="row">
+        <div class="col-md-12 ">
+
+            <img id="previewImage" src="/products/productImages/{{firstImage.pk}}/preview" alt="..." class="img-rounded img-responsive center-block">
+
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12 ">
+
+
+
+            <div class="autoplay">
+
+                {% for productImage in productImages %}
+
+                <div><a class="imageThumbnail" data-preview-url="/products/productImages/{{productImage.pk}}/preview"><img src="/products/productImages/{{productImage.pk}}/thumbnail"  class="img-thumbnail"></a></div>
+                {% endfor %}
+
+            </div>
+
+
+        </div>
+    </div>
+
+
+
+
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+
+$('.autoplay').slick({
+  slidesToShow: 5,
+  slidesToScroll: 1,
+  autoplay: true,
+  autoplaySpeed: 2000,
+  arrows: true
+});
+
+$('.imageThumbnail').bind('click',function() {
+    var url = $(this).data('preview-url');
+    $('#previewImage').attr('src',url);
+});
+
+});
+
+</script>

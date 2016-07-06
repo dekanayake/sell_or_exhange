@@ -5,7 +5,17 @@ div#dropZone {
 }
 
 
-.form-group.required .control-label:after {
+.form-group.required .form-control-label:after {
   content:"*";
   color:red;
+}
+
+#previewImage{
+    width:612px;
+    height:460px;
+    overflow:hidden;
+}
+
+.slick-prev:before, .slick-next:before {
+    color:red !important;
 }

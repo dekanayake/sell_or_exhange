@@ -3,6 +3,7 @@ from .models import Product
 from .models import ProductAttribute
 from .models import SelectProductAttributeValues
 from .models import Brand
+from .models import ProductData
 from django_summernote.widgets import SummernoteWidget
 import logging
 
@@ -15,6 +16,7 @@ class ProductForm(forms.ModelForm):
     featureElements =  {}
     choiceElements = []
     radioElements = []
+    additionalAttributes = []
 
 
 
@@ -24,6 +26,9 @@ class ProductForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.featureElements = {}
+        self.choiceElements = []
+        self.radioElements = []
+        self.additionalAttributes = []
         selectedCategory = kwargs.pop('category')
         super(ProductForm, self).__init__(*args, **kwargs)
         brands = tuple((brand.id, brand.name) for brand in Brand.objects.filter(category__pk=long(selectedCategory)))
@@ -37,6 +42,7 @@ class ProductForm(forms.ModelForm):
                 group = 'EMPTY'
 
             self.featureElements.setdefault(str(group), []).append(productAttribute.name)
+            self.additionalAttributes.append(productAttribute)
 
             if productAttribute.type == 'SELECT':
                 selectValues = tuple((selectValue.name, selectValue.name) for selectValue in productAttribute.selectValues.all())
@@ -60,8 +66,17 @@ class ProductForm(forms.ModelForm):
 
 
 
-
-
+    def get_product_data_list(self):
+            productDataList = []
+            for productAttribute in self.additionalAttributes:
+                elementValue = self.cleaned_data[productAttribute.name]
+                if productAttribute.type == 'CHECKBOX':
+                    elementValue = ','.join(elementValue)
+                productData = ProductData()
+                productData.value = elementValue
+                productData.productAttribute = productAttribute
+                productDataList.append(productData)
+            return productDataList
 
 
 

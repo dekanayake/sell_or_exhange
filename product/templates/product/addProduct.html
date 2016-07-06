@@ -10,8 +10,8 @@ Add product
 
 {% block content %}
 
-<div class="panel panel-default" xmlns="http://www.w3.org/1999/html">
-    <div class="panel-body">
+<div class="card">
+    <div class="card-block">
 
         <h4><span class="label label-pill  label-success ">1</span> Choose a category</h4>
 
@@ -26,19 +26,20 @@ Add product
 </div>
 
 
-<div class="panel panel-default">
-    <div class="panel-body">
+<div class="card">
+    <div class="card-block">
 
         <h4><span class="label label-pill  label-warning ">1</span> Information of the add</h4>
 
         <div class="panel-body">
 
-         <form   class="form-horizontal" action="/products/addProduct/{{selectedCategory.id}}" method="post" enctype="multipart/form-data" id="productForm">
+
+         <form   action="/products/addProduct/{{selectedCategory.id}}/{{randomNumber}}" method="post" enctype="multipart/form-data" id="productForm">
              {% csrf_token %}
 
-             <div class="form-group required {% if form.condition.errors%} has-error {% endif %}">
+             <div class="form-group row required {% if form.condition.errors%} has-error {% endif %}">
 
-                 <label  class="col-sm-2 control-label">{{form.condition.label}}</label>
+                 <label  class="col-sm-2 form-control-label">{{form.condition.label}}</label>
 
                  <div class="col-sm-2">
                      <div class="row">
@@ -53,8 +54,8 @@ Add product
 
              </div>
 
-             <div class="form-group required {% if form.title.errors%} has-error {% endif %}">
-                 <label  class="col-sm-2 control-label">{{form.title.label}}</label>
+             <div class="form-group row required {% if form.title.errors%} has-error {% endif %}">
+                 <label  class="col-sm-2 form-control-label">{{form.title.label}}</label>
 
                  <div class="col-sm-10">
                      <div class="row">
@@ -66,8 +67,8 @@ Add product
                  </div>
              </div>
 
-             <div class="form-group {% if form.brand.errors%} has-error {% endif %}">
-                 <label  class="col-sm-2 control-label">{{form.brand.label}}</label>
+             <div class="form-group row {% if form.brand.errors%} has-error {% endif %}">
+                 <label  class="col-sm-2 form-control-label">{{form.brand.label}}</label>
 
                  <div class="col-sm-2">
                      <div class="row">
@@ -79,8 +80,8 @@ Add product
                  </div>
              </div>
 
-             <div class="form-group {% if form.model.errors%} has-error {% endif %}">
-                 <label  class="col-sm-2 control-label">{{form.model.label}}</label>
+             <div class="form-group row {% if form.model.errors%} has-error {% endif %}">
+                 <label  class="col-sm-2 form-control-label">{{form.model.label}}</label>
 
                  <div class="col-sm-3">
                      <div class="row">
@@ -98,9 +99,9 @@ Add product
              {% for uiElement in form %}
 
              {% if uiElement.html_name in uiElements %}
-             <div class="form-group {% if uiElement.field.required  %} required {% endif %} {% if uiElement.errors%} has-error {% endif %}">
+             <div class="form-group row {% if uiElement.field.required  %} required {% endif %} {% if uiElement.errors%} has-error {% endif %}">
                  {% if uiElement.html_name in form.choiceElements%}
-                 <label class="col-sm-2 control-label">  {{uiElement.label}}</label>
+                 <label class="col-sm-2 form-control-label">  {{uiElement.label}}</label>
                  <div class="col-sm-6">
                      <div class="row">
 
@@ -119,7 +120,7 @@ Add product
                        {% errors uiElement.errors %}
                  </div>
                  {% elif uiElement.html_name in form.radioElements %}
-                 <label class="col-sm-2 control-label">  {{uiElement.label}}</label>
+                 <label class="col-sm-2 form-control-label">  {{uiElement.label}}</label>
                  <div class="col-sm-6">
                         <div class="row">
                             <div class="col-sm-12">
@@ -141,7 +142,7 @@ Add product
                  </div>
                  {% else %}
 
-                 <label class="col-sm-2 control-label">  {{uiElement.label}}</label>
+                 <label class="col-sm-2 form-control-label">  {{uiElement.label}}</label>
                  <div class="col-sm-2">
                      <div class="row">
                          <div class="col-sm-12">
@@ -160,8 +161,8 @@ Add product
              {% endfor %}
 
 
-             <div class="form-group required {% if form.description.errors%} has-error {% endif %}">
-                 <label  class="col-sm-2 control-label">{{form.description.label}}</label>
+             <div class="form-group row required {% if form.description.errors%} has-error {% endif %}">
+                 <label  class="col-sm-2 form-control-label">{{form.description.label}}</label>
 
                  <div class="col-sm-10">
                      <div class="row">
@@ -175,8 +176,8 @@ Add product
 
 
 
-             <div class="form-group">
-                 <label  class="col-sm-2 control-label">Images</label>
+             <div class="form-group row">
+                 <label  class="col-sm-2 form-control-label">Images</label>
 
                  <div class="col-sm-2">
 
@@ -194,7 +195,7 @@ Add product
 
               </div>
 
-             <div class="form-group">
+             <div class="form-group row">
                      <div class="container">
 
 
@@ -216,9 +217,10 @@ Add product
                      </div>
 
                  </div>
+              </div>
 
-             <div class="form-group">
-                 <label  class="col-sm-2 control-label">{{form.price.label}}</label>
+             <div class="form-group row">
+                 <label  class="col-sm-2 form-control-label">{{form.price.label}}</label>
 
                  <div class="col-sm-2">
                      <div class="input-group">
@@ -230,8 +232,8 @@ Add product
 
 
 
-             <div class="form-group">
-                 <div class="col-sm-offset-2 col-sm-10">
+             <div class="form-group row">
+                 <div class="col-sm-10 col-sm-offset-2">
                      <div class="checkbox">
                          <label>
                              {{ form.negotiable}}
@@ -241,8 +243,8 @@ Add product
                  </div>
              </div>
 
-             <div class="form-group">
-                 <div class="col-sm-offset-2 col-sm-3">
+             <div class="form-group row">
+                 <div class="col-sm-10 col-sm-offset-2">
                      <div >
                          <div class="checkbox">
                          <label>
@@ -258,11 +260,14 @@ Add product
 
 
 
-             <div class="form-group">
-                 <div class="col-sm-offset-2 col-sm-3">
+             <div class="form-group row">
+                 <label  class="col-sm-2 form-control-label"></label>
+                 <div class="col-sm-4">
                      <button type="submit" class="btn btn-primary" id="submitButton">Save</button>
                  </div>
              </div>
+
+
 
 
          </form>
@@ -274,6 +279,13 @@ Add product
 
     </div>
 </div>
+
+
+
+
+{% endblock %}
+
+{% block jscontent%}
 
 <script type="text/javascript">
 
@@ -290,7 +302,7 @@ $(document).ready(function(){
         previewNode.parentNode.removeChild(previewNode);
 
         var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
-          url: "/products/productImages/{{randomNumber}}", // Set the url
+          url: "/products/tmpProductImages/{{randomNumber}}", // Set the url
           thumbnailWidth: 240,
           uploadMultiple: true,
           thumbnailHeight: 240,
@@ -347,7 +359,6 @@ $(document).ready(function(){
 
 
 </script>
-
 
 
 {% endblock %}

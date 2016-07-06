@@ -1,9 +1,12 @@
 from django.db import models
 import moneyed
 from djmoney.models.fields import MoneyField
-from django.db.models.signals import post_delete
+from django.db.models.signals import post_delete,post_save
 from django.dispatch import receiver
 import os
+from django.conf import settings
+from PIL import Image, ImageChops, ImageOps
+import logging
 
 
 # Create your models here.
@@ -43,6 +46,11 @@ class Product(models.Model):
         ('N','New'),
         ('O','Used')
     )
+    PRODUCT_STATUS = (
+        ('CREATED','CREATED'),
+        ('SUBMITTED','SUBMITTED'),
+        ('APPROVED','APPROVED')
+    )
     title = models.CharField(max_length=100)
     condition = models.CharField(max_length=1, choices=PRODUCT_CONDITIONS)
     description = models.TextField(max_length=20000)
@@ -52,8 +60,16 @@ class Product(models.Model):
     model = models.CharField(max_length=100, null=True)
     negotiable = models.BooleanField(default=False)
     exchangeable = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=PRODUCT_STATUS,editable=False)
 
+def generate_product_image_filename(instance, filename):
+    url = "images/prod/%s/%s" % (instance.product.pk, filename)
+    return url
 
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    fileName = models.CharField(max_length=150)
+    image = models.FileField(upload_to=generate_product_image_filename)
 
 class SelectProductAttributeValues(models.Model):
     name = models.CharField(max_length=200)
@@ -120,12 +136,42 @@ class ExchangeableProductCandidates(models.Model):
 
 
 @receiver(post_delete, sender=TemporyProductImage)
-def photo_post_delete_handler(sender, **kwargs):
+def temp_product_image_post_delete_handler(sender, **kwargs):
     productImage = kwargs['instance']
     storage, path = productImage.image.storage, productImage.image.path
     storage.delete(path)
 
-    parentPath = "images/tempory/%s" % (productImage.key)
+    parentPath = "%s/images/tempory/%s" % (settings.MEDIA_ROOT,productImage.key)
     if not os.listdir(parentPath):
         os.rmdir(parentPath)
+
+
+
+@receiver(post_save, sender=ProductImage)
+def photo_image_post_save_handler(sender, **kwargs):
+    productImage = kwargs['instance']
+    path =  productImage.image.path
+
+    pathWithoutExtension = path[0:path.find('.') - 1]
+    fileExtension = path[path.find('.') + 1:len(path)]
+
+    im = Image.open(path)
+
+    thumbnailPath = "%s_thumbnail.%s" % (pathWithoutExtension,fileExtension)
+    __makeThumb(path, thumbnailPath, (136,102))
+
+    previewPath = "%s_preview.%s" % (pathWithoutExtension,fileExtension)
+    __makeThumb(path, previewPath, (612,460))
+
+
+def __makeThumb(f_in, f_out, size=(80,80)):
+
+    image = Image.open(f_in)
+    image.thumbnail(size, Image.ANTIALIAS)
+    image_size = image.size
+
+    thumb = ImageOps.fit(image, size, Image.ANTIALIAS, (0.5, 0.5))
+
+    thumb.save(f_out,quality=95)
+
 
