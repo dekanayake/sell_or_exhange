@@ -1,8 +1,8 @@
 This is the project for the sell or exchange
+**
+Instructions**
 
-Instructions
-
-
-Installing PIL
-sudo apt-get install libjpeg8-dev
-pip install pillow
+**
+Installing PIL**
+* sudo apt-get install libjpeg8-dev
+* pip install pillow
