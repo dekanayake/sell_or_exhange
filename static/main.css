@@ -19,3 +19,9 @@ div#dropZone {
 .slick-prev:before, .slick-next:before {
     color:red !important;
 }
+
+.image-bottom {
+    position:absolute;
+    bottom:-2px;
+    right:-2px;
+}

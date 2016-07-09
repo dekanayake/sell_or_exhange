@@ -37,7 +37,7 @@ Add product
          <form   action="/products/addProduct/{{selectedCategory.id}}/{{randomNumber}}" method="post" enctype="multipart/form-data" id="productForm">
              {% csrf_token %}
 
-             <div class="form-group row required {% if form.condition.errors%} has-error {% endif %}">
+             <div class="form-group row required {% if form.condition.errors%} has-danger {% endif %}">
 
                  <label  class="col-sm-2 form-control-label">{{form.condition.label}}</label>
 
@@ -50,11 +50,9 @@ Add product
                      {% errors form.condition.errors %}
                  </div>
 
-
-
              </div>
 
-             <div class="form-group row required {% if form.title.errors%} has-error {% endif %}">
+             <div class="form-group row required {% if form.title.errors%} has-danger {% endif %}">
                  <label  class="col-sm-2 form-control-label">{{form.title.label}}</label>
 
                  <div class="col-sm-10">
@@ -67,7 +65,7 @@ Add product
                  </div>
              </div>
 
-             <div class="form-group row {% if form.brand.errors%} has-error {% endif %}">
+             <div class="form-group row {% if form.brand.errors%} has-danger {% endif %}">
                  <label  class="col-sm-2 form-control-label">{{form.brand.label}}</label>
 
                  <div class="col-sm-2">
@@ -80,7 +78,7 @@ Add product
                  </div>
              </div>
 
-             <div class="form-group row {% if form.model.errors%} has-error {% endif %}">
+             <div class="form-group row {% if form.model.errors%} has-danger {% endif %}">
                  <label  class="col-sm-2 form-control-label">{{form.model.label}}</label>
 
                  <div class="col-sm-3">
@@ -99,7 +97,7 @@ Add product
              {% for uiElement in form %}
 
              {% if uiElement.html_name in uiElements %}
-             <div class="form-group row {% if uiElement.field.required  %} required {% endif %} {% if uiElement.errors%} has-error {% endif %}">
+             <div class="form-group row {% if uiElement.field.required  %} required {% endif %} {% if uiElement.errors%} has-danger {% endif %}">
                  {% if uiElement.html_name in form.choiceElements%}
                  <label class="col-sm-2 form-control-label">  {{uiElement.label}}</label>
                  <div class="col-sm-6">
@@ -161,13 +159,13 @@ Add product
              {% endfor %}
 
 
-             <div class="form-group row required {% if form.description.errors%} has-error {% endif %}">
+             <div class="form-group row required {% if form.description.errors%} has-danger {% endif %}">
                  <label  class="col-sm-2 form-control-label">{{form.description.label}}</label>
 
                  <div class="col-sm-10">
                      <div class="row">
                          <div class="col-sm-12">
-                     {{ form.description }}
+                     {{ form.description  }}
                              </div>
                          </div>
                      {% errors form.description.errors %}
@@ -185,12 +183,11 @@ Add product
 
                  </div>
 
-                 <div class="col-sm-6 hidden" id="image-container">
-                     <div class="progress">
-                         <div class="progress-bar progress-bar-striped active" id="total_progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                 <div class="col-sm-6 invisible" id="image-container">
 
-                         </div>
-                     </div>
+
+                         <progress class="progress progress-striped progress-animated" id="total_progress" value="0" min="0" max="100"></progress>
+
                  </div>
 
               </div>
@@ -201,17 +198,27 @@ Add product
 
                          <div  id="previews" class="row">
 
+                             <div class="card-deck-wrapper">
+                                 <div class="card-deck">
+
 
 
                              <div class="col-md-2" id="template" >
-                                 <div class="well" >
-                                         <img data-dz-thumbnail class="img-thumbnail center-block"/>
-                                     <div class="text-right">
-                                         <button data-dz-remove class="btn btn-sml btn-danger"> <i class="fa fa-times" aria-hidden="true"></i></button>
+
+
+                                 <div class="card card-inverse">
+                                     <img data-dz-thumbnail class="card-img img-thumbnail" data-src="..." alt="Card image cap">
+                                     <div class="card-img-overlay">
+
+                                             <button data-dz-remove class="btn btn-sml btn-danger image-bottom"> <i class="fa fa-times" aria-hidden="true"></i></button>
+
                                      </div>
                                  </div>
 
                              </div>
+
+                                 </div>
+                                 </div>
 
 
                      </div>
@@ -232,27 +239,29 @@ Add product
 
 
 
-             <div class="form-group row">
-                 <div class="col-sm-10 col-sm-offset-2">
-                     <div class="checkbox">
-                         <label>
-                             {{ form.negotiable}}
-                             {{form.negotiable.label}}
-                         </label>
-                     </div>
-                 </div>
-             </div>
+            <div class="form-group row">
+                <div class="col-sm-10 col-sm-offset-2">
+
+                    <div class="checkbox">
+                        <label>
+                            {{ form.negotiable}}
+                            {{form.negotiable.label}}
+                        </label>
+                    </div>
+
+                </div>
+            </div>
 
              <div class="form-group row">
                  <div class="col-sm-10 col-sm-offset-2">
-                     <div >
+
                          <div class="checkbox">
                          <label>
                              {{ form.exchangeable}}
                              {{form.exchangeable.label}}
                          </label>
                              </div>
-                     </div>
+
                  </div>
              </div>
 
@@ -318,27 +327,28 @@ $(document).ready(function(){
         });
 
          myDropzone.on("sendingmultiple", function() {
-                $('#total_progress').width("0%");
-                $('#image-container').toggleClass('hidden');
+                $('#total_progress').val('0');
+                $('#image-container').toggleClass('invisible');
+
            });
 
 
            myDropzone.on("totaluploadprogress", function(progress) {
-                $('#total_progress').width(progress + "%");
+                  $('#total_progress').val(progress);
            });
 
            myDropzone.on("successmultiple", function(files, response) {
              for (i = 0; i < files.length; i++) {
                         $(files[i].previewTemplate).data('server_file', response[i])
                  }
-               $('#image-container').toggleClass('hidden');
+               $('#image-container').toggleClass('invisible');
            });
 
            myDropzone.on("removedfile", function(file) {
                 var server_file = $(file.previewTemplate).data('server_file');
                 $.ajax({
                     type: 'POST',
-                    url: '/products/productImages/{{randomNumber}}',
+                    url: '/products/tmpProductImages/{{randomNumber}}',
                     data: { fileName: server_file },
                     success: function() {
 
