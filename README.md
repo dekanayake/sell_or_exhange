@@ -2,6 +2,7 @@
 
 
 **Installing widget tweaks**
+
 * pip install django-widget-tweaks
 
 **
