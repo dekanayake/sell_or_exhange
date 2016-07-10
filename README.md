@@ -1,6 +1,11 @@
 **This is the project for the sell or exchange Instructions**
 
 **
+Installing moneyd**
+
+* pip install py-moneyed django-money
+
+**
 Installing summernotes**
 
 * pip install django-summernote
