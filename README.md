@@ -1,5 +1,9 @@
 **This is the project for the sell or exchange Instructions**
 
+
+**Installing widget tweaks**
+* pip install django-widget-tweaks
+
 **
 Installing PIL**
 
