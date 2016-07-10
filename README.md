@@ -36,3 +36,33 @@ Installing PIL**
 npm install
 
 ```
+
+**Configurations**
+
+* Need to apply following configurations to the settings.py
+
+
+```
+#!properties
+
+MEDIA_ROOT='[Change to the physical folder of the media folder in your project]'
+```
+
+
+
+```
+#!properties
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'OPTIONS': {
+            'read_default_file': '[Change to my.cnf physical location in project]',
+        },
+    }
+}
+```
+
+* Change the my.cnf file to reflect the database 
+
+
