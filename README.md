@@ -1,4 +1,50 @@
 **This is the project for the sell or exchange Instructions**
+**
+Installing python**
+
+We are using python 2.7
+
+**
+Installing virtual environment**
+
+we are using python venv , so we can keep all the project dependencies in a single virtual machine.
+
+installing and using venv in ubuntu
+
+sudo apt-get install virtualenv
+pip install --user virtualenvwrapper
+source venv/bin/activate
+
+installing and using venv in windows
+
+Go to CMD and type
+
+```
+#!powershell
+
+powershell –ExecutionPolicy Bypass
+```
+
+type 
+
+
+```
+#!powershell
+
+Import-Module virtualenvwrapper
+```
+
+
+```
+#!powershell
+
+workon [venvname]
+```
+
+
+
+
+
 
 **
 Installing mysql**
@@ -79,3 +125,7 @@ password = admin
 
 
 if you have different database name , then need to change the my.cnf accordingly
+
+Setting up the system
+
+Go to the project base directory
