@@ -3,7 +3,7 @@
 **
 Installing mysql**
 
-* pip install mysql-client
+* pip install mysqlclient
 
 **
 Installing moneyd**
