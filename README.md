@@ -63,6 +63,19 @@ DATABASES = {
 }
 ```
 
-* Change the my.cnf file to reflect the database 
+* Change the my.cnf file to reflect the database
+
+**Database**
+
+* database is mysql
+* create a empty database 'sell_or_exchange' 
+
+```
+#!properties
+
+user name = root
+password = admin
+```
 
 
+if you have different database name , then need to change the my.cnf accordingly
