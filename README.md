@@ -1,5 +1,10 @@
 **This is the project for the sell or exchange Instructions**
 
+**
+Installing summernotes**
+
+* pip install django-summernote
+
 
 **Installing widget tweaks**
 
