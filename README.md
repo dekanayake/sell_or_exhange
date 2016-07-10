@@ -1,6 +1,11 @@
 **This is the project for the sell or exchange Instructions**
 
 **
+Installing mysql**
+
+* pip install mysql-client
+
+**
 Installing moneyd**
 
 * pip install py-moneyed django-money
