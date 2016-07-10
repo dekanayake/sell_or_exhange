@@ -25,3 +25,14 @@ Installing PIL**
 
 * sudo apt-get install libjpeg8-dev
 * pip install pillow
+
+**Node JS**
+
+* Install node js
+* Go to sell_or_exchange and type 
+```
+#!shell script
+
+npm install
+
+```
