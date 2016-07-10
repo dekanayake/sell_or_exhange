@@ -8,14 +8,14 @@ We are using python 2.7
 ## Installing virtual environment ##
 
 we are using python venv , so we can keep all the project dependencies in a single virtual machine.
-### 
-installing and using venv in ubuntu ###
+
+### installing and using venv in ubuntu ###
 
 sudo apt-get install virtualenv
 pip install --user virtualenvwrapper
 source venv/bin/activate
-### 
-installing and using venv in windows ###
+
+### installing and using venv in windows ###
 
 Go to CMD and type
 
@@ -51,13 +51,11 @@ workon [venvname]
 
 * pip install py-moneyed django-money
 
-## 
-Installing summernotes ##
+## Installing summernotes ##
 
 * pip install django-summernote
 
-## 
-Installing widget tweaks ##
+## Installing widget tweaks ##
 
 * pip install django-widget-tweaks
 
