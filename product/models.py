@@ -61,6 +61,9 @@ class Product(models.Model):
     negotiable = models.BooleanField(default=False)
     exchangeable = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=PRODUCT_STATUS,editable=False)
+    postedDate = models.DateTimeField()
+    contactNumber = models.CharField(max_length=10,null=True, blank=True)
+    email = models.CharField(max_length=100 ,null=True, blank=True)
 
 def generate_product_image_filename(instance, filename):
     url = "images/prod/%s/%s" % (instance.product.pk, filename)
@@ -89,7 +92,7 @@ class TemporyProductImage(models.Model):
 
 
 class ProductAttribute(models.Model):
-    PRODUCT_ATTRIBUTE_TYPES = (
+    PRODUCT_ATTRIBUTE_TYPES =  (
         ('SELECT','SELECT'),
         ('CHECKBOX','CHECKBOX'),
         ('RADIO','RADIO'),

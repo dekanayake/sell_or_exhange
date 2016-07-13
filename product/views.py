@@ -11,7 +11,7 @@ from django.http import HttpResponse
 import random
 from django.core.files.base import ContentFile
 from django.http import JsonResponse
-
+from datetime import datetime
 
 # Create your views here.
 
@@ -58,7 +58,7 @@ def show_product(request,product_id):
     loadedProductData = ProductData.objects.filter(product__pk=product_id)
     productImages = ProductImage.objects.filter(product__pk=product_id)
     firstImage = productImages[0]
-    return render(request, 'product/showProduct.html',{'product':loadedProduct,'additionalProductData:':loadedProductData,'productImages':productImages, 'firstImage':firstImage})
+    return render(request, 'product/showProduct.html',{'product':loadedProduct,'additionalProductData':loadedProductData,'productImages':productImages, 'firstImage':firstImage})
 
 def temp_product_images(request,random_number):
 
@@ -94,6 +94,7 @@ def __saveProduct(productForm, selectedCategory, randomKey):
     savedProduct  = productForm.save(commit=False)
     savedProduct.category = selectedCategory
     savedProduct.status = 'CREATED'
+    savedProduct.postedDate = datetime.now()
     savedProduct.save()
 
     productDataList = productForm.get_product_data_list()

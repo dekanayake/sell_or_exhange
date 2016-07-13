@@ -22,7 +22,7 @@ class ProductForm(forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = ['title','condition','description','price','negotiable','exchangeable','brand','model']
+        fields = ['title','condition','description','price','negotiable','exchangeable','brand','model','contactNumber','email']
 
     def __init__(self, *args, **kwargs):
         self.featureElements = {}

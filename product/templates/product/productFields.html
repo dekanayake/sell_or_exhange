@@ -1,0 +1,12 @@
+<dl class="dl-horizontal">
+    <dt class="col-sm-3">Condition</dt>
+    <dd class="col-sm-9">{{product.get_condition_display}}</dd>
+    <dt class="col-sm-3">Brand</dt>
+    <dd class="col-sm-9">{{product.brand.name }}</dd>
+    <dt class="col-sm-3">Model</dt>
+    <dd class="col-sm-9">{{product.model}}</dd>
+    {% for additionalProductDataItem in additionalProductData %}
+    <dt class="col-sm-3">{{additionalProductDataItem.productAttribute.displayLabel}}</dt>
+    <dd class="col-sm-9">{{additionalProductDataItem.value}}</dd>
+    {% endfor %}
+</dl>

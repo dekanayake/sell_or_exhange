@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 
 {% block title %}
 Add product
@@ -8,24 +9,113 @@ Add product
 {% block content %}
 
 <div class="container">
+
     <div class="row">
-        <div class="col-md-8 well">
+        <div class="col-sm-8">
+    <div class="row">
+
+            <div class="card card-block">
+                <h3>{{product.title}}</h3>
+                <small class="text-muted">Posted {{product.postedDate|naturaltime}}</small>
+
+            </div>
+    </div>
+
+
+
+    <div class="row">
+        <div class="card card-block">
             {% include "product/productImageGallery.html" %}
         </div>
-        <div class="col-md-3 well">
+    </div>
+
+
             <div class="row">
-                Telephone number
+
+                <div class="card card-block">
+                    <div class="row">
+                        <span class="priceTag">Rs {{product.price|intcomma}}</span>
+                    </div>
+                    <div class="row" >
+                        <div class="col-sm-12" >
+                        {% include "product/productFields.html" %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div  id="description"></div>
+
+                    </div>
+
+                </div>
+
             </div>
+
+
+
+    </div>
+    <div class="col-sm-4">
+
+        <div class="card card-block">
             <div class="row">
-                Telephone number
+                <div class="col-sm-3">
+                    <i class="fa fa-phone-square fa-3x" aria-hidden="true"></i>
+                </div>
+                <div class="col-sm-8">
+                    <div class="row">
+                        <span id="hiddenPhoneNumber" > XXXXXXXXXX </span>
+                        <span id="phoneNumber" class="invisible"> {{product.contactNumber}} </span>
+                    </div>
+                    <div class="row">
+                        <p id="phoneNumberLink"><a  href="javascript:void(0);" onclick="showNumber()" class="card-link nounderline">Show phone number</a> </p>
+                    </div>
+                </div>
             </div>
-            <hr>
+            </div>
+
+        <div class="card card-block">
             <div class="row">
-                email
+                <div class="col-sm-3">
+            <i class="fa fa-envelope fa-3x" aria-hidden="true"></i>
+                    </div>
+
+            <div class="col-sm-8">
+            <p ><a  href="javascript:void(0);" onclick="showNumber()" class="card-link nounderline">Reply by email</a> </p>
+                </div>
             </div>
         </div>
-    </div>
+
+        <div class="card card-block">
+            <div id="share"></div>
+        </div>
+
+
 </div>
 
-
 {% endblock %}
+
+    {% block jscontent%}
+
+    <script type="text/javascript">
+
+        function showNumber() {
+            $('#hiddenPhoneNumber').replaceWith($('#phoneNumber'));
+            $('#phoneNumber').toggleClass('invisible');
+            $('#phoneNumberLink').toggleClass('invisible');
+        }
+
+        $(document).ready(function(){
+
+            $("#share").jsSocials({
+                showLabel: false,
+                showCount: false,
+                shares: ["email", "twitter", "facebook", "googleplus", "whatsapp"]
+            });
+
+            $("#description").html('{{product.description|safe}}');
+
+        });
+
+    </script>
+
+
+    {% endblock %}
