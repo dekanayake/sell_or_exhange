@@ -1,11 +1,12 @@
 from django.db import models
 import moneyed
 from djmoney.models.fields import MoneyField
-from django.db.models.signals import post_delete,post_save
+from django.db.models.signals import post_delete,post_save,pre_save
 from django.dispatch import receiver
 import os
 from django.conf import settings
 from PIL import Image, ImageChops, ImageOps
+import shutil
 import logging
 
 
@@ -74,8 +75,13 @@ class ProductImage(models.Model):
     fileName = models.CharField(max_length=150)
     image = models.FileField(upload_to=generate_product_image_filename)
 
+def generate_product_attrib_icon_image_filename(instance, filename):
+    url = "images/prod_attribute/icon/%s" % (filename)
+    return url
+
 class SelectProductAttributeValues(models.Model):
     name = models.CharField(max_length=200)
+    icon = models.FileField(upload_to=generate_product_attrib_icon_image_filename,null=True, blank=True)
     def __str__(self):
         return  self.name
 
@@ -105,16 +111,23 @@ class ProductAttribute(models.Model):
     type = models.CharField(max_length=100,choices=PRODUCT_ATTRIBUTE_TYPES)
     group = models.CharField(max_length=200, null=True, blank=True)
     selectValues = models.ManyToManyField(SelectProductAttributeValues,blank=True)
+    showIcons = models.BooleanField()
     required = models.BooleanField()
     def __str__(self):
         return ' :: '.join([self.category.getCategoryLabel(), self.name])
 
 
-
 class ProductData(models.Model):
     productAttribute = models.ForeignKey(ProductAttribute, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    value = models.CharField(max_length=100)
+    value = models.CharField(max_length=100,null=True)
+    selectValues = models.ManyToManyField(SelectProductAttributeValues,null=True,blank=True)
+
+class ProductDataSelectValue(models.Model):
+    productData = models.ForeignKey(ProductData, on_delete=models.CASCADE)
+    selectValue = models.ForeignKey(SelectProductAttributeValues, on_delete=models.CASCADE)
+
+
 
 class ExchangeableProduct(models.Model):
     PRODUCT_CONDITIONS = (

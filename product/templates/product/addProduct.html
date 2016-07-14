@@ -104,7 +104,7 @@ Add product
                      <div class="row">
 
                              {% for choice in uiElement.field.choices %}
-                         <div class="col-sm-3">
+                         <div class="col-sm-4">
                              <div class="checkbox">
                                  <label>
                                      <input type="checkbox" name="{{ uiElement.html_name }}" {% if choice.0 in uiElement.value %} checked="checked" {% endif %} id="id_{{ uiElement.html_name }}_{{ forloop.counter }}" value="{{choice.0}}">

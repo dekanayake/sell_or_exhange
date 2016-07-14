@@ -98,10 +98,15 @@ def __saveProduct(productForm, selectedCategory, randomKey):
     savedProduct.save()
 
     productDataList = productForm.get_product_data_list()
-    logging.warning(productDataList)
-    for productData in productDataList:
+    for productData, productDataSelectList in productDataList:
         productData.product = savedProduct
         productData.save()
+
+        for productDataSelect in productDataSelectList:
+            logging.warning(productData)
+            productDataSelect.productData = productData
+            productDataSelect.save()
+
 
     for temporyProductImage in TemporyProductImage.objects.filter(key=randomKey):
         productImage = ProductImage()
