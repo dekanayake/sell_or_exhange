@@ -33,19 +33,69 @@ Add product
             <div class="row">
 
                 <div class="card card-block">
-                    <div class="row">
+
                         <span class="priceTag">Rs {{product.price|intcomma}}</span>
+
+                {% if product.negotiable or product.exchangeable %}
+                   <div class="m-t-1 p-l-1"> <h5><small class="text-muted">
+                       {% if product.negotiable and product.exchangeable  %}
+                        Can negotiate , can exchange
+                       {% elif product.negotiable %}
+                        Can negotiate
+                       {% else %}
+                        Can exchange
+                       {% endif %}
+                   </small></h5> </div>
+                {% endif %}
+
+
+                </div>
+
+            </div>
+
+
+
+            <div class="row">
+
+                <div class="card">
+                    <div class="card-header">
+                         Information
                     </div>
-                    <div class="row" >
-                        <div class="col-sm-12" >
+                    <div class="card-block">
                         {% include "product/productFields.html" %}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="card">
+                    <div class="card-header">
+                        Features
+                    </div>
+                    <div class="card-block">
+                        <div class="row">
+                            {% for feature in features %}
+                            <div class="col-sm-4">
+                                <img src="{{feature.selectValue.icon.url}}"/> {{feature.selectValue.name}}
+                            </div>
+                            {% endfor %}
                         </div>
                     </div>
-                    <div class="row">
-                        <div  id="description"></div>
+                </div>
 
+            </div>
+
+            <div class="row">
+
+                <div class="card">
+                    <div class="card-header">
+                        Description
                     </div>
-
+                    <div class="card-block">
+                        <div  id="description"></div>
+                    </div>
                 </div>
 
             </div>

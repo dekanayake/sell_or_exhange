@@ -121,12 +121,11 @@ class ProductData(models.Model):
     productAttribute = models.ForeignKey(ProductAttribute, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     value = models.CharField(max_length=100,null=True)
-    selectValues = models.ManyToManyField(SelectProductAttributeValues,null=True,blank=True)
+
 
 class ProductDataSelectValue(models.Model):
     productData = models.ForeignKey(ProductData, on_delete=models.CASCADE)
     selectValue = models.ForeignKey(SelectProductAttributeValues, on_delete=models.CASCADE)
-
 
 
 class ExchangeableProduct(models.Model):

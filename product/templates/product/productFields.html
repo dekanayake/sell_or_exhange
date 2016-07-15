@@ -5,8 +5,13 @@
     <dd class="col-sm-9">{{product.brand.name }}</dd>
     <dt class="col-sm-3">Model</dt>
     <dd class="col-sm-9">{{product.model}}</dd>
-    {% for additionalProductDataItem in additionalProductData %}
+    {% for additionalProductDataItem, selectValues in additionalProductData.items %}
     <dt class="col-sm-3">{{additionalProductDataItem.productAttribute.displayLabel}}</dt>
-    <dd class="col-sm-9">{{additionalProductDataItem.value}}</dd>
+    {% if not selectValues %}
+        <dd class="col-sm-9">{{additionalProductDataItem.value}}</dd>
+    {% else %}
+         <dd class="col-sm-9">{{selectValues.0.selectValue.name}}</dd>
+    {% endif %}
+
     {% endfor %}
 </dl>

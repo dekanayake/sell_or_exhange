@@ -2,7 +2,7 @@
 
 
     <div class="row">
-        <div class="col-md-12 ">
+        <div class="col-md-12 text-xs-center">
 
             <img id="previewImage" src="/products/productImages/{{firstImage.pk}}/preview" alt="..." class="img-rounded img-responsive center-block">
 
@@ -19,7 +19,7 @@
 
                 {% for productImage in productImages %}
 
-                <div><a class="imageThumbnail" data-preview-url="/products/productImages/{{productImage.pk}}/preview"><img src="/products/productImages/{{productImage.pk}}/thumbnail"  class="img-thumbnail"></a></div>
+                <div><a class="imageThumbnail" data-preview-url="/products/productImages/{{productImage.pk}}/preview" data-zoom-url="/products/productImages/{{productImage.pk}}/zoom"><img src="/products/productImages/{{productImage.pk}}/thumbnail"  class="img-thumbnail"></a></div>
                 {% endfor %}
 
             </div>
@@ -46,8 +46,31 @@ $('.autoplay').slick({
 
 $('.imageThumbnail').bind('click',function() {
     var url = $(this).data('preview-url');
+    var zoomUrl = $(this).data('zoom-url');
     $('#previewImage').attr('src',url);
+    $('#previewImage').trigger('zoom.destroy');
+    $('#previewImage')
+        .wrap('<span style="display:inline-block" class="img-rounded img-responsive center-block"></span>')
+        .css('display', 'block')
+        .parent()
+        .zoom({
+            url:zoomUrl,
+            magnify:1.5,
+            on:'grab'
+        });
 });
+
+ $('#previewImage')
+        .wrap('<span style="display:inline-block" class="img-rounded img-responsive center-block"></span>')
+        .css('display', 'block')
+        .parent()
+        .zoom({
+            url:'/products/productImages/{{firstImage.pk}}/zoom',
+            magnify:1.5,
+            on:'grab'
+        });
+
+
 
 });
 

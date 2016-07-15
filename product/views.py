@@ -6,6 +6,7 @@ from .models import ProductData
 from .models import TemporyProductImage
 from .models import ProductImage
 from .forms import ProductForm
+from .forms import ProductDataSelectValue
 import logging
 from django.http import HttpResponse
 import random
@@ -55,10 +56,23 @@ def add_product(request,selected_category_id,random_key = -1):
 
 def show_product(request,product_id):
     loadedProduct = Product.objects.get(pk=product_id)
-    loadedProductData = ProductData.objects.filter(product__pk=product_id)
+    loadedProductDataList = ProductData.objects.filter(product__pk=product_id)
+    loadedProductMap = {}
+    featuresList = []
+    for loadedProductData in loadedProductDataList:
+        if loadedProductData.productAttribute.name == 'features':
+            featuresList = ProductDataSelectValue.objects.filter(productData__pk=loadedProductData.id)
+            logging.warning(featuresList)
+        else:
+            if loadedProductData.productAttribute.type in ['RADIO','SELECT','CHECKBOX']:
+                loadedProductMap[loadedProductData] = ProductDataSelectValue.objects.filter(productData__pk=loadedProductData.id)
+            else:
+                loadedProductMap[loadedProductData] = []
     productImages = ProductImage.objects.filter(product__pk=product_id)
     firstImage = productImages[0]
-    return render(request, 'product/showProduct.html',{'product':loadedProduct,'additionalProductData':loadedProductData,'productImages':productImages, 'firstImage':firstImage})
+    logging.warning('this is the additionalProductData')
+    logging.warning(loadedProductMap)
+    return render(request, 'product/showProduct.html',{'product':loadedProduct,'additionalProductData':loadedProductMap,'features':featuresList,'productImages':productImages, 'firstImage':firstImage})
 
 def temp_product_images(request,random_number):
 
@@ -83,7 +97,8 @@ def product_images(request,imagePK,type):
     storage, path = imageToSend.image.storage , imageToSend.image.path
     pathWithoutExtension = path[0:path.find('.') - 1]
     fileExtension = path[path.find('.') + 1:len(path)]
-    if type is 'zoom':
+
+    if type == 'zoom':
         requestedPath = path
     else:
         requestedPath =    "%s_%s.%s" % (pathWithoutExtension,type,fileExtension)
