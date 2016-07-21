@@ -140,3 +140,88 @@ This will migrate all the database scripts
 
 python manage.py runserver
 ```
+
+**Configuring to integrate SOLR**
+
+**Install and configuring SOLR**
+
+Download SOLR from http://www.apache.org/dyn/closer.lua/lucene/solr/6.1.0 and unzip
+**
+Create SOLR core** 
+
+Go to [SOLR BASE]/bin and tyoe ./solr create -c products
+
+run solr instance by 
+```
+#!python
+
+./solr start
+```
+
+
+
+**Installing rabbitmq**
+
+
+```
+#!python
+
+sudo apt-get install rabbitmq
+```
+
+**Installing celery**
+
+
+```
+#!python
+
+pip install celery
+```
+
+run 
+```
+#!python
+
+celery -A mysite worker -l debug
+```
+
+
+
+
+**Installing haystack**
+
+```
+#!python
+
+
+pip install haystack
+```
+**Installing celery haystack**
+
+```
+#!python
+
+
+pip install celery-haystack
+
+```
+
+**
+Creating the schema**
+
+go to mysite base folder and type
+
+
+
+```
+#!python
+
+ python manage.py build_solr_schema --filename=[SOLR base folder]/server/solr/product/conf/schema.xml && curl 'http://localhost:8983/solr/admin/cores?action=RELOAD&core=product&wt=json&indent=true'
+```
+**
+how to delete documents in SOLR**
+
+Run 
+
+curl http://localhost:8983/solr/product/update?commit=true -H "Content-Type: text/xml" --data-binary '<delete><query>*:*</query></delete>'
+
