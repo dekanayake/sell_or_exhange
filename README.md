@@ -145,8 +145,8 @@ python manage.py runserver
 **Install and configuring SOLR**
 
 Download SOLR from http://www.apache.org/dyn/closer.lua/lucene/solr/6.1.0 and unzip
-**
-Create SOLR core** 
+
+**Create SOLR core** 
 
 Go to [SOLR BASE]/bin and type 
 ```
