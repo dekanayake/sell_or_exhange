@@ -148,7 +148,13 @@ Download SOLR from http://www.apache.org/dyn/closer.lua/lucene/solr/6.1.0 and un
 **
 Create SOLR core** 
 
-Go to [SOLR BASE]/bin and tyoe ./solr create -c products
+Go to [SOLR BASE]/bin and type 
+```
+#!python
+
+./solr create -c products
+```
+
 
 run solr instance by 
 ```
