@@ -140,8 +140,8 @@ This will migrate all the database scripts
 
 python manage.py runserver
 ```
-
-**Configuring to integrate SOLR**
+# 
+Intergarting  SOLR #
 
 **Install and configuring SOLR**
 
@@ -223,5 +223,9 @@ how to delete documents in SOLR**
 
 Run 
 
-curl http://localhost:8983/solr/product/update?commit=true -H "Content-Type: text/xml" --data-binary '<delete><query>*:*</query></delete>'
+```
+#!python
 
+
+curl http://localhost:8983/solr/product/update?commit=true -H "Content-Type: text/xml" --data-binary '<delete><query>*:*</query></delete>'
+```
