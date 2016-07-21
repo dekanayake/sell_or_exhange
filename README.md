@@ -140,8 +140,7 @@ This will migrate all the database scripts
 
 python manage.py runserver
 ```
-# 
-Intergarting  SOLR #
+# Intergrating  SOLR #
 
 **Install and configuring SOLR**
 
