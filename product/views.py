@@ -122,6 +122,8 @@ def __saveProduct(productForm, selectedCategory, randomKey):
             productDataSelect.productData = productData
             productDataSelect.save()
 
+    savedProduct.save()
+
 
     for temporyProductImage in TemporyProductImage.objects.filter(key=randomKey):
         productImage = ProductImage()

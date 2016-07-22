@@ -41,6 +41,8 @@ INSTALLED_APPS = (
     'widget_tweaks',
     'django_summernote',
     'django.contrib.humanize',
+    'haystack',
+    'celery_haystack',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -56,6 +58,20 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'mysite.urls'
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
+
+HAYSTACK_SIGNAL_PROCESSOR = 'celery_haystack.signals.CelerySignalProcessor'
+
+
+BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
+        'URL': 'http://127.0.0.1:8983/solr/product'
+        # ...or for multicore...
+        # 'URL': 'http://127.0.0.1:8983/solr/mysite',
+    },
+}
 
 
 # Database

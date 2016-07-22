@@ -1,0 +1,14 @@
+{{ object.title }}
+{{ object.description | striptags}}
+{{ object.brand.name }}
+{{ object.model }}
+{{ object.category.name }}
+{% for productData in object.productdata_set.all%}
+   {% if productData.productAttribute.type == 'RADIO' or productData.productAttribute.type == 'SELECT' or productData.productAttribute.type == 'CHECKBOX' %}
+        {% for productSelectItem in productData.productdataselectvalue_set.all%}
+            {{productSelectItem.selectValue.name}}
+        {% endfor %}
+   {% elif productData.productAttribute.type == 'TEXT' %}
+        {{productData.value}}
+   {% endif %}
+{% endfor %}
