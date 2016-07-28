@@ -165,14 +165,13 @@ run solr instance by
 
 
 
-**Installing rabbitmq**
+**Installing redis**
 
+Follow the following link
+http://redis.io/topics/quickstart
 
-```
-#!python
+pip install redis
 
-sudo apt-get install rabbitmq
-```
 
 **Installing celery**
 
