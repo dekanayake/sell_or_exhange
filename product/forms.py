@@ -8,6 +8,7 @@ from .models import ProductData
 from django_summernote.widgets import SummernoteWidget
 import logging
 from django.utils.safestring import mark_safe
+from haystack.forms import FacetedSearchForm
 
 
 
@@ -101,4 +102,33 @@ class ProductForm(forms.ModelForm):
 
 
 
+class ProductSearchForm(FacetedSearchForm):
 
+    def __init__(self, *args, **kwargs):
+        self.selected_facets_or = kwargs.pop("selected_facets_or", [])
+        super(ProductSearchForm, self).__init__(*args, **kwargs)
+
+    category = forms.CharField(required=False)
+
+    def search(self):
+        sqs = super(ProductSearchForm, self).search()
+
+        if self.cleaned_data['category']:
+            logging.warn('category available')
+            sqs = sqs.filter(category__exact=self.cleaned_data['category'])
+
+        or_facets = {}
+        for facet in self.selected_facets_or:
+            if ":" not in facet:
+                continue
+
+            field, value = facet.split(":", 1)
+
+            if value:
+                or_facets.setdefault(field,[]).append(value)
+
+        for field, or_values in or_facets.items():
+            or_narrow_query = " OR ".join(map(lambda i: u'%s:"%s"' % (field, sqs.query.clean(i)), or_values))
+            sqs = sqs.narrow(or_narrow_query)
+
+        return sqs

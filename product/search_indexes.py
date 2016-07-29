@@ -4,6 +4,7 @@ from .models import Product
 from .models import ProductData
 from .models import ProductDataSelectValue
 import logging
+import datetime
 
 
 
@@ -30,21 +31,24 @@ class ProductIndex(CelerySearchIndex, indexes.Indexable):
     def prepare_condition(self,obj):
         return dict(Product.PRODUCT_CONDITIONS).get(obj.condition)
 
+    def prepare_postedDate(self,obj):
+        return obj.postedDate.strftime('%Y-%m-%dT%H:%M:%SZ')
+
     def prepare_category(self, obj):
         output = []
         currentCategory = obj.category
         categoryArray = []
         while (currentCategory is not None):
-            categoryArray.append(currentCategory.name)
+            categoryArray.append(currentCategory.pk)
             currentCategory = currentCategory.parentCategory
 
         cateogryPathArray = []
-        for categoryItem in categoryArray:
-            cateogryPathArray.append(categoryItem)
+        for categoryItem in reversed(categoryArray):
+            cateogryPathArray.append(str(categoryItem))
             if (len(cateogryPathArray) == 1):
                 output.append(cateogryPathArray[0])
             else:
-                output.append(" > ".join(list(categoryArray)))
+                output.append(" > ".join(list(cateogryPathArray)))
 
         return output
 
@@ -56,7 +60,7 @@ class ProductIndex(CelerySearchIndex, indexes.Indexable):
             if productDataItem.productAttribute.type in ['CHECKBOX','SELECT','RADIO']:
                 productDataSelectValues = ProductDataSelectValue.objects.filter(productData__pk=long(productDataItem.pk))
                 for productDataSelectItem in productDataSelectValues:
-                    output.append('>'.join([str(productDataItem.productAttribute.pk),str(productDataSelectItem.pk)]))
+                    output.append('>'.join([str(productDataItem.productAttribute.pk),str(productDataSelectItem.selectValue.pk)]))
         return output
 
 

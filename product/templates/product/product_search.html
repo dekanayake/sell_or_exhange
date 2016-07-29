@@ -1,0 +1,55 @@
+<form method="get" action="/products/search">
+    <table>
+        <tbody>
+        {{ form.as_table }}
+        <tr>
+            <td>&nbsp;</td>
+            <td><input type="submit" value="Search"></td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+
+{% if query %}
+<!-- Begin faceting. -->
+<h2>By Author</h2>
+hik
+{{ request }}
+<div>
+    <dl>
+        {% if facets.fields.category %}
+        <dt>Category</dt>
+        {# Provide only the top 5 authors #}
+        {% for category in facets.fields.category|slice:":5" %}
+        <dd><a href="{{ request.get_full_path }}&amp;selected_facets=category_exact:{{ category.0|urlencode }}">{{ category.0 }}</a> ({{ category.1 }})</dd>
+        {% endfor %}
+        {% else %}
+        <p>No author facets.</p>
+        {% endif %}
+    </dl>
+
+    <dl>
+        {% if facets.fields.variants %}
+        <dt>Category</dt>
+
+        {% for variant in facets.fields.variants %}
+        <dd><a href="{{ request.get_full_path }}&amp;selected_facets_or=variants_exact:{{ variant.0|urlencode }}">{{ variant.0 }}</a> ({{ variant.1 }})</dd>
+        {% endfor %}
+        {% else %}
+        <p>No author facets.</p>
+        {% endif %}
+    </dl>
+</div>
+<!-- End faceting -->
+
+<!-- Display results... -->
+{% for result in page_obj.object_list %}
+<div class="search_result">
+    <h3><a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a></h3>
+
+    <p>{{ result.object.description|truncatewords:80 }}</p>
+</div>
+{% empty %}
+<p>Sorry, no results found.</p>
+{% endfor %}
+{% endif %}

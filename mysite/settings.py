@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'haystack',
     'celery_haystack',
+    'cacheops'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -55,14 +56,57 @@ MIDDLEWARE_CLASSES = (
     'mysite.middleware.HttpPostTunnelingMiddleware',
 )
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            # insert your TEMPLATE_DIRS here
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
+                # list if you haven't customized them:
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+                'django.core.context_processors.request'
+            ],
+        },
+    },
+]
+
 ROOT_URLCONF = 'mysite.urls'
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
 HAYSTACK_SIGNAL_PROCESSOR = 'celery_haystack.signals.CelerySignalProcessor'
 
+#CACHEOPS_REDIS = "redis://localhost:6379/0"
 
-BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+CACHEOPS_REDIS = {
+    'host': 'localhost', # redis-server is on same machine
+    'port': 6379,        # default redis port
+    'db': 0,             # SELECT non-default redis database
+    # using separate redis db or redis instance
+    # is highly recommended
+
+    'socket_timeout': 3,   # connection timeout in seconds, optional
+}
+
+CACHEOPS = {
+    'product.productattribute': {'ops': ('get'), 'timeout': 12*60*60},
+    'product.selectproductattributevalues': {'ops': ('get'), 'timeout': 12*60*60},
+}
+
+CACHEOPS_DEGRADE_ON_FAILURE = True
+
+
+BROKER_URL = 'redis://localhost:6379/0'
 
 HAYSTACK_CONNECTIONS = {
     'default': {

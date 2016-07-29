@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from django.conf import settings
 from django.conf.urls.static import static
+from views import ProductSearchView
 
 from . import views
 
@@ -12,4 +13,5 @@ urlpatterns = [
     url(r'^showProduct/(?P<product_id>[0-9]+)', views.show_product, name='show_product'),
     url(r'^tmpProductImages/(?P<random_number>[0-9]+)', views.temp_product_images, name='temp_product_images'),
     url(r'^productImages/(?P<imagePK>[0-9]+)/(?P<type>\w+)', views.product_images, name='product_images'),
+    url(r'^search/?$', ProductSearchView.as_view(), name='search_view'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

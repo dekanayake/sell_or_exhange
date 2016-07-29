@@ -6,13 +6,19 @@ from .models import ProductData
 from .models import TemporyProductImage
 from .models import ProductImage
 from .forms import ProductForm
+from .forms import ProductSearchForm
 from .forms import ProductDataSelectValue
+from .forms import SelectProductAttributeValues
+from .forms import ProductAttribute
 import logging
 from django.http import HttpResponse
 import random
 from django.core.files.base import ContentFile
 from django.http import JsonResponse
 from datetime import datetime
+from haystack.views import FacetedSearchView
+from haystack.query import SearchQuerySet
+from haystack.generic_views import FacetedSearchView as BaseFacetedSearchView
 
 # Create your views here.
 
@@ -104,6 +110,49 @@ def product_images(request,imagePK,type):
         requestedPath =    "%s_%s.%s" % (pathWithoutExtension,type,fileExtension)
 
     return HttpResponse(storage.open(requestedPath).read(), content_type="image/jpeg")
+
+class ProductSearchView(BaseFacetedSearchView):
+    template_name = 'product/product_search.html'
+    form_class = ProductSearchForm
+    facet_fields = ['category']
+
+    def get_form_kwargs(self):
+        kwargs = super(ProductSearchView, self).get_form_kwargs()
+        kwargs.update({
+            'selected_facets_or': self.request.GET.getlist("selected_facets_or")
+        })
+        return kwargs
+
+    def get_queryset(self):
+        qs = super(ProductSearchView, self).get_queryset()
+        selected_facets = list(set(map(lambda i:  i.split(':',1)[0],self.request.GET.getlist("selected_facets"))))
+        selected_category = self.request.GET.get('category')
+
+        if (selected_category) or ('category_exact' in selected_facets):
+            for facet_field in ['category','condition','brand','variants']:
+                qs = qs.facet(facet_field)
+
+        return qs
+
+
+    def get_context_data(self, **kwargs):
+        context = super(ProductSearchView, self).get_context_data(**kwargs)
+        facet_fields = self.queryset.facet_counts()['fields']
+        if 'variants' in facet_fields:
+            variants_facets = facet_fields['variants']
+            variants_facet_dict = {}
+            for variant_facet in variants_facets:
+               attribute = ProductAttribute.objects.get(pk=long(variant_facet[0].split('>',1)[0])).displayLabel
+               selectValue = SelectProductAttributeValues.objects.get(pk=long(variant_facet[0].split('>',1)[1])).name
+               variants_facet_dict.setdefault(attribute,[]).append((selectValue,variant_facet[1]))
+            context.update({'variants':variants_facet_dict})
+
+
+
+        return context
+
+
+
 
 def __saveProduct(productForm, selectedCategory, randomKey):
     savedProduct  = productForm.save(commit=False)
