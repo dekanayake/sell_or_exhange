@@ -65,6 +65,11 @@ workon [venvname]
 * sudo apt-get install libjpeg8-dev
 * pip install pillow
 
+
+## Installing django-cacheops ##
+
+* pip install django-cacheops
+
 ## Node JS ##
 
 * Install node js
