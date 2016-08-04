@@ -79,6 +79,18 @@ div#dropZone {
 	top: 17px;
 }
 
-
-
 .jssocials-share-link { border-radius: 50%; }
+
+
+.facets ul {
+    margin: 0; padding: 0;  list-style: none;
+}
+
+.facets ul ul  {
+    margin-left : 20px
+}
+
+
+
+
+

@@ -113,9 +113,8 @@ class ProductSearchForm(FacetedSearchForm):
     def search(self):
         sqs = super(ProductSearchForm, self).search()
 
-        if self.cleaned_data['category']:
-            logging.warn('category available')
-            sqs = sqs.filter(category__exact=self.cleaned_data['category'])
+        if self.cleaned_data['category'] and (not self.cleaned_data['category'] == "-1"):
+                sqs = sqs.filter(category__exact=self.cleaned_data['category'])
 
         or_facets = {}
         for facet in self.selected_facets_or:

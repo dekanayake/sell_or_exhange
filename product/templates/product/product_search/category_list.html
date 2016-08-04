@@ -1,0 +1,19 @@
+{% for parentCategory,childCategoryTree in categoryTree.items %}
+<ul >
+    <li><a href="{{category_selected_facet_url}}&amp;selected_facets=category_exact:{{ parentCategory.0|urlencode }}">{{parentCategory.1}}</a>
+      {% if childCategoryTree %}
+        {% include "product/product_search/category_list.html" with categoryTree=childCategoryTree childCategories=childCategories %}
+      {% elif childCategories %}
+        <ul>
+            {% for childCategory in childCategories %}
+              <li><a href="{{category_selected_facet_url}}&amp;selected_facets=category_exact:{{ childCategory.0|urlencode }}">{{childCategory.1}} ({{childCategory.2}})</li>
+            {% endfor %}
+        </ul>
+
+        {% else %}
+            (0)
+        {% endif %}
+    </li>
+</ul>
+
+{% endfor %}

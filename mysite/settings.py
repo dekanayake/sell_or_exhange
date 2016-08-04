@@ -101,6 +101,9 @@ CACHEOPS_REDIS = {
 CACHEOPS = {
     'product.productattribute': {'ops': ('get'), 'timeout': 12*60*60},
     'product.selectproductattributevalues': {'ops': ('get'), 'timeout': 12*60*60},
+    'product.category': {'ops': ('get'), 'timeout': 12*60*60},
+    '*.*': {'ops': (), 'timeout': 12*60*60},
+
 }
 
 CACHEOPS_DEGRADE_ON_FAILURE = True

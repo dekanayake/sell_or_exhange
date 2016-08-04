@@ -42,18 +42,9 @@ class ProductIndex(CelerySearchIndex, indexes.Indexable):
             categoryArray.append(currentCategory.pk)
             currentCategory = currentCategory.parentCategory
 
-        cateogryPathArray = []
-        for categoryItem in reversed(categoryArray):
-            cateogryPathArray.append(str(categoryItem))
-            if (len(cateogryPathArray) == 1):
-                output.append(cateogryPathArray[0])
-            else:
-                output.append(" > ".join(list(cateogryPathArray)))
-
-        return output
+        return categoryArray
 
     def prepare_variants(self, obj):
-        logging.warn('--------------prepare_varaiants-------')
         output = []
         productDataList =  ProductData.objects.filter(product__pk=long(obj.pk))
         for productDataItem in productDataList:
