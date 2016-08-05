@@ -161,20 +161,20 @@ class ProductSearchView(BaseFacetedSearchView):
 
     @staticmethod
     def __updateCategoryFacetCounts(request,facet_fields,context):
-        selected_category = request.GET.get('category')
-        if (not selected_category):
-            selected_facets = dict(map(lambda i:  (i.split(':',1)[0],i.split(':',1)[1]),request.GET.getlist("selected_facets")))
-            if ('category_exact' in selected_facets):
-                selected_category = selected_facets['category_exact']
+        selected_category = None
 
-        if (selected_category == "-1"):
-            selected_category = None
+        selected_facets = dict(map(lambda i:  (i.split(':',1)[0],i.split(':',1)[1]),request.GET.getlist("selected_facets")))
+        if ('category_exact' in selected_facets):
+            selected_category = selected_facets['category_exact']
+
+        if not selected_category:
+            selected_category = request.GET.get('category')
 
 
         @cached_as(Category, extra=selected_category)
         def __getParentCategoryTree():
             parentCategoryList = []
-            if (selected_category):
+            if (selected_category and (not selected_category == "-1")):
                 currentCategory = Category.objects.get(pk=long(selected_category))
                 if not currentCategory.category_set.all():
                     parentCategory = currentCategory.parentCategory
@@ -198,7 +198,7 @@ class ProductSearchView(BaseFacetedSearchView):
 
         @cached_as(Category, extra=selected_category)
         def __getChildCategories():
-            if (selected_category):
+            if (selected_category and (not selected_category == "-1")):
                 currentCategory = Category.objects.get(pk=long(selected_category))
                 childCategories  = currentCategory.category_set.all()
                 if not childCategories:
@@ -206,6 +206,14 @@ class ProductSearchView(BaseFacetedSearchView):
             else:
                 childCategories  = ProductSearchView.__getParentCategories()
             return childCategories
+
+        @cached_as(Category, extra=selected_category)
+        def __getSelectedCategory():
+            if selected_category == "-1":
+                return (-1,"All categories")
+            else:
+                currentCategory = Category.objects.get(pk=long(selected_category))
+                return (currentCategory.pk, currentCategory.name)
 
 
         facetFieldsDict = dict(map(lambda i: (i[0],i[1]), facet_fields))
@@ -217,13 +225,21 @@ class ProductSearchView(BaseFacetedSearchView):
 
         context.update({'category_facet_category_tree':__getParentCategoryTree()})
         context.update({'category_facet_child_categories':childCategoryArray})
-        logging.warn('[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]')
-        logging.warn(re.sub('&amp;selected_facets=category_exact:.*?', '', request.get_full_path()))
-        context.update({'category_selected_facet_url':re.sub('&selected_facets=category_exact:.*', '', request.get_full_path())})
+        if selected_category:
+            context.update({'selected_category':__getSelectedCategory()})
+        context.update({'category_selected_facet_url':ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&selected_facets=category_exact:.*','&category=.*'])})
+        category_facet_hide = request.GET.get('category_facet_hide')
+        if category_facet_hide:
+            context.update({'category_facet_hide':True})
+            context.update({'category_facet_expand_url':ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&category_facet_hide=Y'])})
 
 
-
-
+    @staticmethod
+    def __removeParamsFromURL(requestURL, regxToRemoveList):
+        url = requestURL
+        for regxPattern in regxToRemoveList:
+            url = re.sub(regxPattern,'',url)
+        return url
 
 
     @staticmethod

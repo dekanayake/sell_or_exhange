@@ -42,7 +42,7 @@ class ProductIndex(CelerySearchIndex, indexes.Indexable):
             categoryArray.append(currentCategory.pk)
             currentCategory = currentCategory.parentCategory
 
-        return categoryArray
+        return categoryArray + [-1]
 
     def prepare_variants(self, obj):
         output = []

@@ -18,11 +18,15 @@
                             </div>
                             <div class="col-xs-3">
                                 <select class="form-control" name="{{ form.category.html_name }}" id="{{ form.category.id_for_label }}"  >
-                                  <option value="" disabled  {% if not form.category.value %} selected {% endif %} hidden>Category</option>
+                                    {% if selected_category%}
+                                        <option value="{{selected_category.0}}" selected hidden>{{selected_category.1}}</option>
+                                    {% else%}
+                                        <option value="1" disabled  selected hidden>Category</option>
+                                    {% endif %}
                                     <option value="-1">All categories</option>
                                     {% for category,childCategories in categoryList.items %}
 
-                                        <option value="{{category.0}}" {% ifequal category.0|slugify  form.category.value %} selected {% endifequal %}> {{category.1}}</option>
+                                        <option value="{{category.0}}" > {{category.1}}</option>
 
                                         {% if childCategories %}
                                             {% for childCategory in childCategories.keys %}
@@ -56,16 +60,38 @@
         <div class="col-sm-3">
             <div class="card ">
                 <div class="card-header" role="tab" id="debtorHeader">
-                    <h4 class="card-title">
-                        <a data-toggle="collapse" href="#debtorInfo" aria-expanded="true" aria-controls="debtorInfo">
-                            Debtor Info
-                        </a>
-                    </h4>
+                    <div class="row">
+                        <div class="col-xs-8">
+                            <h7 class="card-title">
+                                    Categories
+                            </h7>
+                            {% if category_facet_hide %}<div class="card-subtitle text-muted"><small>{{selected_category.1}}</small></div>{% endif %}
+                        </div>
+                        <div class="col-xs-4">
+                            <a class="pull-right" href="
+                               {%if not category_facet_hide%}
+                                    {{ request.get_full_path }}&amp;category_facet_hide=Y
+                               {% else %}
+                                      {{ category_facet_expand_url }}
+                               {% endif %}
+                               ">
+                                {% if category_facet_hide %}
+                                 <i class="fa fa-plus-square" aria-hidden="true"></i>
+                                {% else %}
+                                    <i class="fa fa-minus-square" aria-hidden="true"></i>
+                                {% endif %}
+
+                            </a>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="card-collapse collapse in" id="debtorInfo" role="tabpanel" aria-labelledby="debtorHeader">
+                 {% if not category_facet_hide%}
                   <div class="card-block facets" >
-                      {% include "product/product_search/category_list.html" with categoryTree=category_facet_category_tree childCategories=category_facet_child_categories %}
+                      {% include "product/product_search/category_list.html" with categoryTree=category_facet_category_tree childCategories=category_facet_child_categories selected_category=selected_category%}
                   </div>
+                  {% endif %}
                 </div>
             </div>
         </div>
@@ -77,6 +103,8 @@
 
 
 {% block jscontent%}
+
+
 
 
 {% endblock %}

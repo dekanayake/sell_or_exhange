@@ -1,17 +1,31 @@
 {% for parentCategory,childCategoryTree in categoryTree.items %}
 <ul >
-    <li><a href="{{category_selected_facet_url}}&amp;selected_facets=category_exact:{{ parentCategory.0|urlencode }}">{{parentCategory.1}}</a>
+    <li><a href="{{category_selected_facet_url}}&amp;selected_facets=category_exact:{{ parentCategory.0|urlencode }} "
+           {% if selected_category.0 == parentCategory.0 %}
+           class="selected-facet"
+           {% endif %}>
+    <small>{{parentCategory.1}}
+        {% if not childCategories and not childCategoryTree%}
+           (0)
+        {% endif %}
+    </small></a>
       {% if childCategoryTree %}
-        {% include "product/product_search/category_list.html" with categoryTree=childCategoryTree childCategories=childCategories %}
+        {% include "product/product_search/category_list.html" with categoryTree=childCategoryTree childCategories=childCategories selected_category=selected_category%}
       {% elif childCategories %}
         <ul>
             {% for childCategory in childCategories %}
-              <li><a href="{{category_selected_facet_url}}&amp;selected_facets=category_exact:{{ childCategory.0|urlencode }}">{{childCategory.1}} ({{childCategory.2}})</li>
+              <li >
+                  <a href="{{category_selected_facet_url}}&amp;selected_facets=category_exact:{{ childCategory.0|urlencode }}"
+                     {% if selected_category.0 == childCategory.0 %}
+                        class="selected-facet"
+                     {% endif %}
+                     >
+                    <small>{{childCategory.1}} ({{childCategory.2}})</small>
+                  </a>
+              </li>
             {% endfor %}
         </ul>
 
-        {% else %}
-            (0)
         {% endif %}
     </li>
 </ul>
