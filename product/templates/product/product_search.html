@@ -86,14 +86,14 @@
                     </div>
 
                 </div>
-                <div class="card-collapse collapse in" id="debtorInfo" role="tabpanel" aria-labelledby="debtorHeader">
                  {% if not category_facet_hide%}
                   <div class="card-block facets" >
                       {% include "product/product_search/category_list.html" with categoryTree=category_facet_category_tree childCategories=category_facet_child_categories selected_category=selected_category%}
                   </div>
                   {% endif %}
-                </div>
             </div>
+
+            {% include "product/product_search/variant_list.html" with variants_facets_dict=variants_facets_dict variants_facets_selected_variants_or_url_dict=variants_facets_selected_variants_or_url_dict full_request_path=request.get_full_path variants_facets_selected_variant_names=variants_facets_selected_variant_names variant_facet_hidden_facets_dict=variant_facet_hidden_facets_dict %}
         </div>
     </div>
 

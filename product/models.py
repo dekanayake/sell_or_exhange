@@ -113,6 +113,8 @@ class ProductAttribute(models.Model):
     selectValues = models.ManyToManyField(SelectProductAttributeValues,blank=True)
     showIcons = models.BooleanField()
     required = models.BooleanField()
+    searchByOr = models.BooleanField()
+    facetOrder = models.IntegerField()
     def __str__(self):
         return ' :: '.join([self.category.getCategoryLabel(), self.name])
 

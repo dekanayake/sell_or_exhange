@@ -1,0 +1,61 @@
+{% load common_tags %}
+
+<div class="card ">
+    <div class="card-header" role="tab" id="debtorHeader">
+        <div class="row">
+            <div class="col-xs-8">
+                <h7 class="card-title">
+                   {{ attribute.name }}
+                </h7>
+                {% if  attribute.pk in variant_facet_hidden_facets_dict.keys %}
+                     <div class="card-subtitle text-muted">
+                         {% if attribute.pk in variants_facets_selected_variant_names.keys %}
+                             {% for selected_facet in variants_facets_selected_variant_names|get_item:attribute.pk %}
+                                <span class="tag tag-primary">{{selected_facet.1}} <i class="fa fa-minus-circle" aria-hidden="true"></i></span>
+                             {% endfor %}
+                         {% endif %}
+                     </div>
+                {% endif %}
+
+            </div>
+            <div class="col-xs-4">
+                <a class="pull-right" href="
+                               {%if not attribute.pk in variant_facet_hidden_facets_dict.keys%}
+                                    {{ request.get_full_path }}&amp;variant_facet_{{attribute.pk}}_hide=Y
+                               {% else %}
+                                      {{ variant_facet_hidden_facets_dict|get_item:attribute.pk }}
+                               {% endif %}
+                               ">
+                    {% if  attribute.pk in variant_facet_hidden_facets_dict.keys %}
+                        <i class="fa fa-plus-square" aria-hidden="true"></i>
+                    {% else %}
+                      <i class="fa fa-minus-square" aria-hidden="true"></i>
+                    {% endif %}
+
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    {% if not attribute.pk in variant_facet_hidden_facets_dict.keys %}
+    <div class="card-block facets" >
+       <ul>
+           {% for selectValueFacet in select_value_facet_list %}
+           <li>
+               {% if selectValueFacet.0 in variants_facets_selected_variants%}
+                   <a href="{{ variants_facets_selected_variants_or_url_dict|get_item:selectValueFacet.0 }}" class="selected-facet">
+                     <input type="checkbox" checked> <small>{{selectValueFacet.1.name}} ({{selectValueFacet.2}})</small>
+                   </a>
+               {% else%}
+                   <a href="{{full_request_path}}&amp;selected_facets_or=variants_exact:{{selectValueFacet.0|urlencode}}" >
+                       <input type="checkbox" > <small>{{selectValueFacet.1.name}} ({{selectValueFacet.2}})</small>
+                   </a>
+               {% endif%}
+           </li>
+           {% endfor %}
+       </ul>
+    </div>
+    {% endif %}
+
+</div>
