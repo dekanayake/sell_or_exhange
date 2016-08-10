@@ -92,7 +92,12 @@
                   </div>
                   {% endif %}
             </div>
-
+            {% if condition_facet_fields %}
+                {% include "product/product_search/facet.html" with facet_name="condition" facet_display_name="Condition" facet_fields=condition_facet_fields selected_facet=condition_facet_selected_facet selected_facet_url=condition_facet_selected_facet_url facet_hide=condition_facet_hide facet_expand_url=condition_facet_expand_url %}
+            {% endif %}
+            {% if brand_facet_fields %}
+                {% include "product/product_search/facet.html" with facet_name="brand" facet_display_name="Brand" facet_fields=brand_facet_fields selected_facet=brand_facet_selected_facet selected_facet_url=brand_facet_selected_facet_url facet_hide=brand_facet_hide facet_expand_url=brand_facet_expand_url %}
+            {% endif %}
             {% include "product/product_search/variant_list.html"  %}
         </div>
     </div>

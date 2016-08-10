@@ -4,5 +4,8 @@
 
     {% if attribute.searchByOr %}
         {% include "product/product_search/or_variant_facet.html" with attribute=attribute select_value_facet_list=variants_facets_list  %}
-    {%  endif %}
+    {%  else %}
+        {% include "product/product_search/variant_facet.html" with attribute=attribute select_value_facet_list=variants_facets_list  %}
+    {% endif %}
+
 {% endfor %}

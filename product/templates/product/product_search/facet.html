@@ -1,0 +1,60 @@
+
+
+<div class="card ">
+    <div class="card-header" role="tab" id="debtorHeader">
+        <div class="row">
+            <div class="col-xs-8">
+                <h7 class="card-title">
+                    {{ facet_display_name }}
+                </h7>
+                {% if  facet_hide %}
+                <div class="card-subtitle text-muted">
+
+                    {% if selected_facet %}
+                        <small>{{selected_facet}}</small>
+                    {% endif %}
+
+                </div>
+                {% endif %}
+
+            </div>
+            <div class="col-xs-4">
+                <a class="pull-right" href="
+                               {%if not facet_hide %}
+                                    {{ request.get_full_path }}&amp;{{facet_name}}_facet_hide=Y
+                               {% else %}
+                                      {{ facet_expand_url }}
+                               {% endif %}
+                               ">
+                    {% if  facet_hide %}
+                    <i class="fa fa-plus-square" aria-hidden="true"></i>
+                    {% else %}
+                    <i class="fa fa-minus-square" aria-hidden="true"></i>
+                    {% endif %}
+
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    {% if not facet_hide %}
+    <div class="card-block facets" >
+        <ul>
+            {% for facet_field in facet_fields %}
+            <li >
+                <a href="{{selected_facet_url}}&amp;selected_facets={{facet_name}}_exact:{{ facet_field.0|urlencode }}"
+                   {% if selected_facet == facet_field.0 %}
+                   class="selected-facet"
+                   {% endif %}
+                >
+                    <small>{{facet_field.0}} ({{facet_field.1}})</small>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+</div>
+

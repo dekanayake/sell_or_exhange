@@ -45,6 +45,12 @@ class ProductSearchView(BaseFacetedSearchView):
         if "category" in facet_fields:
             ProductSearchView.__updateCategoryFacetCounts(self.request, facet_fields['category'],context)
 
+        if "condition" in facet_fields:
+            ProductSearchView.__updateFacetCounts(self.request,'condition', facet_fields['condition'],context)
+
+        if "brand" in facet_fields:
+            ProductSearchView.__updateFacetCounts(self.request,'brand', facet_fields['brand'],context)
+
 
 
         return context
@@ -124,6 +130,29 @@ class ProductSearchView(BaseFacetedSearchView):
             context.update({'category_facet_expand_url':ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&category_facet_hide=Y'])})
 
     @staticmethod
+    def __updateFacetCounts(request, facet_name, facet_fields, context):
+        selected_facet = None
+        facet_phrase = '%s_exact' % facet_name
+
+        selected_facets = dict(map(lambda i:  (i.split(':',1)[0],i.split(':',1)[1]),request.GET.getlist("selected_facets")))
+        if (facet_phrase in selected_facets):
+            selected_facet = selected_facets[facet_phrase]
+
+        context.update({'%s_facet_fields' % facet_name:facet_fields})
+        if selected_facet:
+            context.update({'%s_facet_selected_facet' % facet_name: selected_facet})
+        selected_facet_url = ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&selected_facets=%s_exact:.*' % facet_name])
+        context.update({'%s_facet_selected_facet_url' % facet_name: selected_facet_url })
+
+        facet_hide = request.GET.get('%s_facet_hide' % facet_name)
+        if facet_hide:
+            context.update({'%s_facet_hide' % facet_name:True})
+            context.update({'%s_facet_expand_url' % facet_name:ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&%s_facet_hide=Y' % facet_name])})
+
+
+
+
+    @staticmethod
     def __updateVariantFacetCounts(request, context, facet_fields):
         variants_facets = []
         if 'variants' in facet_fields:
@@ -154,12 +183,24 @@ class ProductSearchView(BaseFacetedSearchView):
             selected_variant_names.setdefault(selected_attribute,[]).append((selected_variant_or,selected_facet_name))
             selected_variants_or_url_dict[selected_variant_or] = ProductSearchView.__removeParamsFromURL(request.get_full_path(),["&selected_facets_or=variants_exact:%s" % (urllib.quote(selected_variant_or))])
 
-        if (selected_variants_or):
+        selected_facets = map(lambda i:  (i.split(':',1)[0],i.split(':',1)[1]),request.GET.getlist("selected_facets"))
+        selected_variants = map(lambda i: i[1],filter(lambda i : i[0] == 'variants_exact' , selected_facets))
+        selected_variants_url_dict = {}
+        for selected_variant in selected_variants:
+            selected_attribute = ProductAttribute.objects.get(pk=long(selected_variant.split('>',1)[0])).pk
+            selected_facet_name = SelectProductAttributeValues.objects.get(pk=long(selected_variant.split('>',1)[1])).name
+            selected_variant_names[selected_attribute] = (selected_variant,selected_facet_name)
+            selected_variants_url_dict[selected_variant] = ProductSearchView.__removeParamsFromURL(request.get_full_path(),["&selected_facets=variants_exact:%s" % (urllib.quote(selected_variant))])
+
+        if (selected_variants_or + selected_variants):
             context.update({'variants_facets_selected_variant_names':selected_variant_names})
-            logging.warn('=======================selected_variant_names=========')
-            logging.warn(selected_variant_names)
-            context.update({'variants_facets_selected_variants':selected_variants_or})
+            context.update({'variants_facets_selected_variants':selected_variants_or + selected_variants})
+
+        if selected_variants_or_url_dict:
             context.update({'variants_facets_selected_variants_or_url_dict':selected_variants_or_url_dict})
+
+        if selected_variants_url_dict:
+            context.update({'variants_facets_selected_variants_url_dict':selected_variants_url_dict})
 
         context.update({'variant_facet_hidden_facets_dict':variant_facet_hidden_facets_dict})
 
