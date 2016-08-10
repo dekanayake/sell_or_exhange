@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.conf import settings
 from django.conf.urls.static import static
-from views import ProductSearchView
+from view.product_search_view import ProductSearchView
 
 from . import views
 

@@ -11,7 +11,7 @@
                      <div class="card-subtitle text-muted">
                          {% if attribute.pk in variants_facets_selected_variant_names.keys %}
                              {% for selected_facet in variants_facets_selected_variant_names|get_item:attribute.pk %}
-                                <span class="tag tag-primary">{{selected_facet.1}} <i class="fa fa-minus-circle" aria-hidden="true"></i></span>
+                                <span class="tag tag-primary">{{selected_facet.1}}</span>
                              {% endfor %}
                          {% endif %}
                      </div>
@@ -48,7 +48,7 @@
                      <input type="checkbox" checked> <small>{{selectValueFacet.1.name}} ({{selectValueFacet.2}})</small>
                    </a>
                {% else%}
-                   <a href="{{full_request_path}}&amp;selected_facets_or=variants_exact:{{selectValueFacet.0|urlencode}}" >
+                   <a href="{{request.get_full_path}}&amp;selected_facets_or=variants_exact:{{selectValueFacet.0|urlencode}}" >
                        <input type="checkbox" > <small>{{selectValueFacet.1.name}} ({{selectValueFacet.2}})</small>
                    </a>
                {% endif%}

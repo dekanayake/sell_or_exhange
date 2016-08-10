@@ -3,6 +3,6 @@
 {% for attribute, variants_facets_list in variants_facets_dict.items %}
 
     {% if attribute.searchByOr %}
-        {% include "product/product_search/or_variant_facet.html" with attribute=attribute select_value_facet_list=variants_facets_list variants_facets_selected_variants_or_url_dict=variants_facets_selected_variants_or_url_dict full_request_path=full_request_path variants_facets_selected_variant_names=variants_facets_selected_variant_names variant_facet_hidden_facets_dict=variant_facet_hidden_facets_dict %}
+        {% include "product/product_search/or_variant_facet.html" with attribute=attribute select_value_facet_list=variants_facets_list  %}
     {%  endif %}
 {% endfor %}
