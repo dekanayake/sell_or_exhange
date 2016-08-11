@@ -13,7 +13,7 @@ class ProductIndex(CelerySearchIndex, indexes.Indexable):
     condition  = indexes.CharField(model_attr='condition',faceted=True)
     category = indexes.MultiValueField(faceted=True)
     variants = indexes.MultiValueField(faceted=True)
-    price = indexes.DecimalField(model_attr='price',null=True)
+    price = indexes.FloatField(model_attr='price',null=True)
     brand = indexes.CharField(model_attr='brand',faceted=True,null=True)
     negotiable = indexes.BooleanField(model_attr='negotiable')
     exchangeable = indexes.BooleanField(model_attr='exchangeable')

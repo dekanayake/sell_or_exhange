@@ -109,12 +109,20 @@ class ProductSearchForm(FacetedSearchForm):
         super(ProductSearchForm, self).__init__(*args, **kwargs)
 
     category = forms.CharField(required=False)
+    minPrice = forms.CharField(required=False)
+    maxPrice = forms.CharField(required=False)
 
     def search(self):
         sqs = super(ProductSearchForm, self).search()
 
         if self.cleaned_data['category']:
                 sqs = sqs.filter(category__exact=self.cleaned_data['category'])
+
+        if self.cleaned_data['minPrice']:
+                sqs = sqs.filter(price__gte=long(self.cleaned_data['minPrice']))
+
+        if self.cleaned_data['maxPrice']:
+                sqs = sqs.filter(price__lte=long(self.cleaned_data['maxPrice']))
 
         or_facets = {}
         for facet in self.selected_facets_or:

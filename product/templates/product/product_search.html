@@ -99,6 +99,7 @@
                 {% include "product/product_search/facet.html" with facet_name="brand" facet_display_name="Brand" facet_fields=brand_facet_fields selected_facet=brand_facet_selected_facet selected_facet_url=brand_facet_selected_facet_url facet_hide=brand_facet_hide facet_expand_url=brand_facet_expand_url %}
             {% endif %}
             {% include "product/product_search/variant_list.html"  %}
+            {% include "product/product_search/price_facet.html" %}
         </div>
     </div>
 
@@ -110,6 +111,9 @@
 {% block jscontent%}
 
 
+<script type="text/javascript">
 
+    {% include "product/product_search/price_facet.js" %}
+</script>
 
 {% endblock %}

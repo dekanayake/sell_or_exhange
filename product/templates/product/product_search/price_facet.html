@@ -1,0 +1,60 @@
+{% load widget_tweaks %}
+
+<div class="card">
+    <div class="card-header" >
+        <div class="row">
+            <div class="col-xs-8">
+                <h7 class="card-title">
+                    Price
+                </h7>
+                {% if  price_facet_hide %}
+                <div class="card-subtitle text-muted">
+                    {% if price_facet_min_price or price_facet_max_price %}
+                    <ul class="list-inline">
+                        {% if price_facet_min_price %}
+                            <li class="list-inline-item"><small>Min:{{price_facet_min_price}}</small></li>
+                        {% endif %}
+                        {% if price_facet_max_price %}
+                            <li class="list-inline-item" ><small>Max:{{price_facet_max_price}}</small></li>
+                        {% endif %}
+                    </ul>
+                    {% endif %}
+
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-xs-4">
+                <a class="pull-right" href="
+                               {%if not price_facet_hide %}
+                                    {{ request.get_full_path }}&amp;price_facet_hide=Y
+                               {% else %}
+                                      {{ price_facet_expand_url }}
+                               {% endif %}
+                               ">
+                    {% if  price_facet_hide %}
+                    <i class="fa fa-plus-square" aria-hidden="true"></i>
+                    {% else %}
+                    <i class="fa fa-minus-square" aria-hidden="true"></i>
+                    {% endif %}
+
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if not price_facet_hide %}
+        <div class="card-block">
+            <div class="form-inline" >
+                <div class="form-group">
+                    {{form.minPrice|attr:"class:form-control form-control-sm"|attr:"placeholder:Min"|attr:"size:5" }}
+                </div>
+                -
+                <div class="form-group">
+                    {{form.maxPrice|attr:"class:form-control form-control-sm"|attr:"placeholder:Max"|attr:"size:5" }}
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm" id="filterPriceFacetBtn"><i class="fa fa-filter" aria-hidden="true"></i></button>
+            </div>
+        </div>
+    {% endif %}
+</div>
+

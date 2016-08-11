@@ -51,7 +51,7 @@ class ProductSearchView(BaseFacetedSearchView):
         if "brand" in facet_fields:
             ProductSearchView.__updateFacetCounts(self.request,'brand', facet_fields['brand'],context)
 
-
+        ProductSearchView.__updatePriceRangeFacet(self.request, context)
 
         return context
 
@@ -150,6 +150,23 @@ class ProductSearchView(BaseFacetedSearchView):
             context.update({'%s_facet_expand_url' % facet_name:ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&%s_facet_hide=Y' % facet_name])})
 
 
+    @staticmethod
+    def __updatePriceRangeFacet(request, context):
+        minPrice = request.GET.get('minPrice')
+        if minPrice:
+            context.update({'price_facet_min_price':minPrice})
+
+        maxPrice = request.GET.get('maxPrice')
+        if maxPrice:
+            context.update({'price_facet_max_price':maxPrice})
+
+        price_filter_url = ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&minPrice=.*','&maxPrice=.*'])
+        context.update({'price_facet_filter_url':price_filter_url})
+
+        facet_hide = request.GET.get('price_facet_hide')
+        if facet_hide:
+            context.update({'price_facet_hide':True})
+            context.update({'price_facet_expand_url' :ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&price_facet_hide=Y'])})
 
 
     @staticmethod
