@@ -52,7 +52,7 @@
                 <div class="form-group">
                     {{form.maxPrice|attr:"class:form-control form-control-sm"|attr:"placeholder:Max"|attr:"size:5" }}
                 </div>
-                <button type="submit" class="btn btn-primary btn-sm" id="filterPriceFacetBtn"><i class="fa fa-filter" aria-hidden="true"></i></button>
+                <button type="submit" class="btn btn-primary btn-sm" id="filterPriceFacetBtn" data-filter-url="{{price_facet_filter_url}}"><i class="fa fa-filter" aria-hidden="true"></i></button>
             </div>
         </div>
     {% endif %}

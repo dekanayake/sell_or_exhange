@@ -65,7 +65,7 @@
                             <h7 class="card-title">
                                     Categories
                             </h7>
-                            {% if category_facet_hide %}<div class="card-subtitle text-muted"><small>{{selected_category.1}}</small></div>{% endif %}
+                            <div class="card-subtitle text-muted"><small>{{selected_category.1}}</small></div>
                         </div>
                         <div class="col-xs-4">
                             <a class="pull-right" href="
@@ -101,6 +101,31 @@
             {% include "product/product_search/variant_list.html"  %}
             {% include "product/product_search/price_facet.html" %}
         </div>
+
+        <div class="col-sm-9 p-l-0">
+            <div class="card card-block">
+                <div class="row">
+                    <div class="col-sm-6"></div>
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-4 pull-right">
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <label >Sort by</label>
+                                <select class="form-control" id="sortSelect" data-url="{{sort_by_url}}">
+                                    <option value="postedDate" {%if selected_sort_by = 'postedDate'%} selected {% endif %}>Most recent</option>
+                                    <option value="price" {%if selected_sort_by = 'price'%} selected {% endif %}>Low prices</option>
+                                    <option value="-price" {%if selected_sort_by = '-price'%} selected {% endif %}>High prices</option>
+                                </select>
+                            </div>
+                       </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% for result in page_obj.object_list %}
+            {% include "product/product_search/product_row.html" with result=result %}
+        {% endfor %}
     </div>
 
 </div>
@@ -114,6 +139,22 @@
 <script type="text/javascript">
 
     {% include "product/product_search/price_facet.js" %}
+
+    $(document).ready(function(){
+
+        $('#sortSelect').bind('change',function() {
+              var sortField = $('#sortSelect option:selected').val();
+              var url = $("#sortSelect").data("url");
+
+              if (sortField){
+                 url = url.concat('&sort_by=' + escape(sortField));
+              }
+
+
+              window.location.href = url;
+        });
+
+   });
 </script>
 
 {% endblock %}

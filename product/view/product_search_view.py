@@ -21,6 +21,9 @@ class ProductSearchView(BaseFacetedSearchView):
         kwargs.update({
             'selected_facets_or': self.request.GET.getlist("selected_facets_or")
         })
+        kwargs.update({
+            'sort_by':self.request.GET.get('sort_by')
+        })
         return kwargs
 
     def get_queryset(self):
@@ -52,8 +55,16 @@ class ProductSearchView(BaseFacetedSearchView):
             ProductSearchView.__updateFacetCounts(self.request,'brand', facet_fields['brand'],context)
 
         ProductSearchView.__updatePriceRangeFacet(self.request, context)
+        ProductSearchView.__updateSoryByContext(self.request, context)
 
         return context
+
+    @staticmethod
+    def __updateSoryByContext(request,context):
+        sort_by = request.GET.get('sort_by')
+        if (sort_by):
+            context.update({'selected_sort_by':sort_by})
+        context.update({'sort_by_url':ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&sort_by=.*'])})
 
     @staticmethod
     def __updateCategoryFacetCounts(request,facet_fields,context):

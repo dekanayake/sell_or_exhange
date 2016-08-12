@@ -7,7 +7,7 @@
                 <h7 class="card-title">
                     {{ facet_display_name }}
                 </h7>
-                {% if  facet_hide %}
+
                 <div class="card-subtitle text-muted">
 
                     {% if selected_facet %}
@@ -15,7 +15,7 @@
                     {% endif %}
 
                 </div>
-                {% endif %}
+
 
             </div>
             <div class="col-xs-4">
@@ -43,11 +43,12 @@
         <ul>
             {% for facet_field in facet_fields %}
             <li >
-                <a href="{{selected_facet_url}}&amp;selected_facets={{facet_name}}_exact:{{ facet_field.0|urlencode }}"
-                   {% if selected_facet == facet_field.0 %}
-                   class="selected-facet"
-                   {% endif %}
-                >
+                {% if selected_facet == facet_field.0 %}
+                         <a href="{{selected_facet_url}}" class="selected-facet">
+                {% else %}
+                         <a href="{{selected_facet_url}}&amp;selected_facets={{facet_name}}_exact:{{ facet_field.0|urlencode }}" >
+                {% endif %}
+
                     <small>{{facet_field.0}} ({{facet_field.1}})</small>
                 </a>
             </li>

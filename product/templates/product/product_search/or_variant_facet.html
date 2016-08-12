@@ -5,9 +5,9 @@
         <div class="row">
             <div class="col-xs-8">
                 <h7 class="card-title">
-                   {{ attribute.name }}
+                   {{ attribute.displayLabel }}
                 </h7>
-                {% if  attribute.pk in variant_facet_hidden_facets_dict.keys %}
+
                      <div class="card-subtitle text-muted">
                          {% if attribute.pk in variants_facets_selected_variant_names.keys %}
                              {% for selected_facet in variants_facets_selected_variant_names|get_item:attribute.pk %}
@@ -15,7 +15,7 @@
                              {% endfor %}
                          {% endif %}
                      </div>
-                {% endif %}
+
 
             </div>
             <div class="col-xs-4">
