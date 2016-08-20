@@ -76,8 +76,6 @@ def show_product(request,product_id):
                 loadedProductMap[loadedProductData] = []
     productImages = ProductImage.objects.filter(product__pk=product_id)
     firstImage = productImages[0]
-    logging.warning('this is the additionalProductData')
-    logging.warning(loadedProductMap)
     return render(request, 'product/showProduct.html',{'product':loadedProduct,'additionalProductData':loadedProductMap,'features':featuresList,'productImages':productImages, 'firstImage':firstImage})
 
 def temp_product_images(request,random_number):
@@ -132,8 +130,6 @@ def __saveProduct(productForm, selectedCategory, randomKey):
             productDataSelect.productData = productData
             productDataSelect.save()
 
-    savedProduct.save()
-
 
     for temporyProductImage in TemporyProductImage.objects.filter(key=randomKey):
         productImage = ProductImage()
@@ -141,6 +137,8 @@ def __saveProduct(productForm, selectedCategory, randomKey):
         productImage.fileName = temporyProductImage.fileName
         productImage.image.save(temporyProductImage.fileName,ContentFile(temporyProductImage.image.read()), save=True)
         temporyProductImage.delete()
+
+    savedProduct.save()
 
     logging.warning(savedProduct.id)
     return savedProduct.id

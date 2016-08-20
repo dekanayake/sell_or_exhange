@@ -10,6 +10,7 @@ from  product.models import ProductAttribute
 from  product.models import Category
 import re
 import logging
+from django.conf import settings
 
 class ProductSearchView(BaseFacetedSearchView):
     template_name = 'product/product_search.html'
@@ -56,8 +57,53 @@ class ProductSearchView(BaseFacetedSearchView):
 
         ProductSearchView.__updatePriceRangeFacet(self.request, context)
         ProductSearchView.__updateSoryByContext(self.request, context)
+        ProductSearchView.__updatePaginationContext(self.request, context)
 
         return context
+
+    @staticmethod
+    def __updatePaginationContext(request, context):
+        page_obj = context.get('page_obj')
+        page_range = page_obj.paginator.page_range
+        num_pages = page_obj.paginator.num_pages
+        if (num_pages > 1):
+            current_page_param = request.GET.get('page')
+            current_page = 1
+            if (current_page_param):
+                current_page = int(current_page_param)
+                context.update({'page_selected':current_page})
+                logging.warn(current_page)
+            page_row_size = settings.HAYSTACK_SEARCH_RESULTS_PER_PAGE
+            search_pagination_size = settings.SEARCH_PAGINATION_SIZE
+            total_page_num = page_obj.paginator.num_pages
+
+            start_page = current_page - 2
+            end_page = current_page + 2
+
+            if start_page < 1:
+                end_page = search_pagination_size
+                start_page = 1
+
+            if end_page > total_page_num:
+                end_page = total_page_num
+                start_page = end_page - search_pagination_size + 1
+                if start_page < 1:
+                    start_page = 1
+
+            logging.warn('--------------------------------')
+            logging.warn(start_page)
+            logging.warn(end_page)
+            page_range_array = []
+            for page_num in range(start_page,end_page + 1):
+                page_range_array.append(page_num)
+            context.update({'page_range':page_range_array})
+            if page_obj.has_next():
+                context.update({'page_next_page_number':page_obj.next_page_number()})
+            if page_obj.has_previous():
+                context.update({'page_previous_page_number':page_obj.previous_page_number()})
+            context.update({'page_url':ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&page=.*'])})
+            context.update({'paginate':True})
+
 
     @staticmethod
     def __updateSoryByContext(request,context):
