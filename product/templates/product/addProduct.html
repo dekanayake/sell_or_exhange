@@ -10,301 +10,329 @@ Add product
 
 {% block content %}
 
-<div class="card">
-    <div class="card-block">
+<div class="container">
 
-        <h4><span class="label label-pill  label-success ">1</span> Choose a category</h4>
+    <div class="row">
 
-        {% if selectedCategory %}
-        {{selectedCategory}} <a href="/products/selectCategory/{{ selectedCategory.parentCategory.id }}"> <i class="fa fa-pencil" aria-hidden="true"></i></a>
-        {% endif %}
+        <div class="card">
+            <div class="card-block">
 
+                <h4><span class="tag tag-pill  tag-success ">1</span> Choose a category</h4>
 
+                {% if selectedCategory %}
+                {{selectedCategory}} <a href="/products/selectCategory/{{ selectedCategory.parentCategory.id }}"> <i class="fa fa-pencil" aria-hidden="true"></i></a>
+                {% endif %}
 
-    </div>
-</div>
-</div>
 
 
-<div class="card">
-    <div class="card-block">
+            </div>
+        </div>
 
-        <h4><span class="label label-pill  label-warning ">1</span> Information of the add</h4>
+     </div>
 
-        <div class="panel-body">
+     <div class="row">
 
+            <div class="card">
+                <div class="card-block">
 
-         <form   action="/products/addProduct/{{selectedCategory.id}}/{{randomNumber}}" method="post" enctype="multipart/form-data" id="productForm">
-             {% csrf_token %}
+                    <h4><span class="tag tag-pill  tag-success ">2</span> Choose a Location</h4>
 
-             <div class="form-group row required {% if form.condition.errors%} has-danger {% endif %}">
+                    {% if selectedLocation %}
+                    {{selectedLocation}} <a href="/products/selectLocation/{{ selectedLocation.parentLocation.id }}?category={{selectedCategory.id}}"> <i class="fa fa-pencil" aria-hidden="true"></i></a>
+                    {% endif %}
 
-                 <label  class="col-sm-2 form-control-label">{{form.condition.label}}</label>
-
-                 <div class="col-sm-2">
-                     <div class="row">
-                         <div class="col-sm-12">
-                         {{ form.condition|attr:"class:form-control" }}
-                         </div>
-                     </div>
-                     {% errors form.condition.errors %}
-                 </div>
-
-             </div>
-
-             <div class="form-group row required {% if form.title.errors%} has-danger {% endif %}">
-                 <label  class="col-sm-2 form-control-label">{{form.title.label}}</label>
-
-                 <div class="col-sm-10">
-                     <div class="row">
-                         <div class="col-sm-12">
-                     {{ form.title|attr:"class:form-control"|attr:"placeholder:Add title" }}
-                         </div>
-                     </div>
-                     {% errors form.title.errors %}
-                 </div>
-             </div>
-
-             <div class="form-group row {% if form.brand.errors%} has-danger {% endif %}">
-                 <label  class="col-sm-2 form-control-label">{{form.brand.label}}</label>
-
-                 <div class="col-sm-2">
-                     <div class="row">
-                         <div class="col-sm-12">
-                     {{ form.brand|attr:"class:form-control" }}
-                             </div>
-                         </div>
-                     {% errors form.brand.errors %}
-                 </div>
-             </div>
-
-             <div class="form-group row {% if form.model.errors%} has-danger {% endif %}">
-                 <label  class="col-sm-2 form-control-label">{{form.model.label}}</label>
-
-                 <div class="col-sm-3">
-                     <div class="row">
-                         <div class="col-sm-12">
-                     {{ form.model|attr:"class:form-control" }}
-                             </div>
-                         </div>
-                     {% errors form.model.errors %}
-                 </div>
-             </div>
-
-             {% for feature, uiElements  in form.featureElements.items %}
-
-
-             {% for uiElement in form %}
-
-             {% if uiElement.html_name in uiElements %}
-             <div class="form-group row {% if uiElement.field.required  %} required {% endif %} {% if uiElement.errors%} has-danger {% endif %}">
-                 {% if uiElement.html_name in form.choiceElements%}
-                 <label class="col-sm-2 form-control-label">  {{uiElement.label}}</label>
-                 <div class="col-sm-6">
-                     <div class="row">
-
-                             {% for choice in uiElement.field.choices %}
-                         <div class="col-sm-4">
-                             <div class="checkbox">
-                                 <label>
-                                     <input type="checkbox" name="{{ uiElement.html_name }}" {% if choice.0 in uiElement.value %} checked="checked" {% endif %} id="id_{{ uiElement.html_name }}_{{ forloop.counter }}" value="{{choice.0}}">
-                                     {{choice.1}}
-                                 </label>
-                             </div>
-                         </div>
-                             {% endfor %}
-
-                     </div>
-                       {% errors uiElement.errors %}
-                 </div>
-                 {% elif uiElement.html_name in form.radioElements %}
-                 <label class="col-sm-2 form-control-label">  {{uiElement.label}}</label>
-                 <div class="col-sm-6">
-                        <div class="row">
-                            <div class="col-sm-12">
-
-                         {% for choice in uiElement.field.choices %}
-
-
-                                 <label class="radio-inline">
-                                     <input type="radio" name="{{ uiElement.html_name }}" {% if choice.0 in uiElement.value %} checked="checked" {% endif %} id="id_{{ uiElement.html_name }}_{{ forloop.counter }}" value="{{choice.0}}">
-                                     {{choice.1}}
-                                 </label>
-
-
-                         {% endfor %}
-                         </div>
-                        </div>
-                     {% errors uiElement.errors %}
-
-                 </div>
-                 {% else %}
-
-                 <label class="col-sm-2 form-control-label">  {{uiElement.label}}</label>
-                 <div class="col-sm-2">
-                     <div class="row">
-                         <div class="col-sm-12">
-                     {{uiElement |attr:"class:form-control"}}
-                             </div>
-                         </div>
-                     {% errors uiElement.errors %}
-                 </div>
-                 {% endif %}
-
-
-             </div>
-             {% endif %}
-             {% endfor %}
-
-             {% endfor %}
-
-
-             <div class="form-group row required {% if form.description.errors%} has-danger {% endif %}">
-                 <label  class="col-sm-2 form-control-label">{{form.description.label}}</label>
-
-                 <div class="col-sm-10">
-                     <div class="row">
-                         <div class="col-sm-12">
-                     {{ form.description  }}
-                             </div>
-                         </div>
-                     {% errors form.description.errors %}
-                 </div>
-             </div>
-
-
-
-             <div class="form-group row">
-                 <label  class="col-sm-2 form-control-label">Images</label>
-
-                 <div class="col-sm-2">
-
-                     <input id="upload" type="button" value="Upload" class="btn btn-primary" >
-
-                 </div>
-
-                 <div class="col-sm-6 invisible" id="image-container">
-
-
-                         <progress class="progress progress-striped progress-animated" id="total_progress" value="0" min="0" max="100"></progress>
-
-                 </div>
-
-              </div>
-
-             <div class="form-group row">
-                     <div class="container">
-
-
-                         <div  id="previews" class="row">
-
-                             <div class="card-deck-wrapper">
-                                 <div class="card-deck">
-
-
-
-                             <div class="col-md-2" id="template" >
-
-
-                                 <div class="card card-inverse">
-                                     <img data-dz-thumbnail class="card-img img-thumbnail" data-src="..." alt="Card image cap">
-                                     <div class="card-img-overlay">
-
-                                             <button data-dz-remove class="btn btn-sml btn-danger image-bottom"> <i class="fa fa-times" aria-hidden="true"></i></button>
-
-                                     </div>
-                                 </div>
-
-                             </div>
-
-                                 </div>
-                                 </div>
-
-
-                     </div>
-
-                 </div>
-              </div>
-
-             <div class="form-group row">
-                 <label  class="col-sm-2 form-control-label">{{form.price.label}}</label>
-
-                 <div class="col-sm-2">
-                     <div class="input-group">
-                         <div class="input-group-addon">Rs</div>
-                         {{ form.price|attr:"class:form-control"|attr:"placeholder:Amount" }}
-                     </div>
-                 </div>
-             </div>
-
-
-
-            <div class="form-group row">
-
-                <div class="col-sm-10 offset-sm-2">
-
-                    <div class="form-check">
-                        <label class="form-check-label">
-                            {{ form.negotiable|attr:"class:form-check-input"}}
-                            {{form.negotiable.label}}
-                        </label>
-                    </div>
-
-                    <div class="form-check">
-                        <label class="form-check-label">
-                            {{ form.exchangeable|attr:"class:form-check-input"}}
-                            {{form.exchangeable.label}}
-                        </label>
-                    </div>
 
 
                 </div>
             </div>
+    </div>
+
+
+    <div class="row">
+
+        <div class="card">
+            <div class="card-block">
+
+                <h4><span class="tag tag-pill  tag-warning ">3</span> Information of the add</h4>
+
+                <div class="panel-body">
+
+
+                 <form   action="/products/addProduct/{{selectedCategory.id}}/{{selectedLocation.id}}/{{randomNumber}}" method="post" enctype="multipart/form-data" id="productForm">
+                     {% csrf_token %}
+
+                     <div class="form-group row required {% if form.condition.errors%} has-danger {% endif %}">
+
+                         <label  class="col-sm-2 form-control-label">{{form.condition.label}}</label>
+
+                         <div class="col-sm-2">
+                             <div class="row">
+                                 <div class="col-sm-12">
+                                 {{ form.condition|attr:"class:form-control" }}
+                                 </div>
+                             </div>
+                             {% errors form.condition.errors %}
+                         </div>
+
+                     </div>
+
+                     <div class="form-group row required {% if form.title.errors%} has-danger {% endif %}">
+                         <label  class="col-sm-2 form-control-label">{{form.title.label}}</label>
+
+                         <div class="col-sm-10">
+                             <div class="row">
+                                 <div class="col-sm-12">
+                             {{ form.title|attr:"class:form-control"|attr:"placeholder:Add title" }}
+                                 </div>
+                             </div>
+                             {% errors form.title.errors %}
+                         </div>
+                     </div>
+
+                     <div class="form-group row {% if form.brand.errors%} has-danger {% endif %}">
+                         <label  class="col-sm-2 form-control-label">{{form.brand.label}}</label>
+
+                         <div class="col-sm-2">
+                             <div class="row">
+                                 <div class="col-sm-12">
+                             {{ form.brand|attr:"class:form-control" }}
+                                     </div>
+                                 </div>
+                             {% errors form.brand.errors %}
+                         </div>
+                     </div>
+
+                     <div class="form-group row {% if form.model.errors%} has-danger {% endif %}">
+                         <label  class="col-sm-2 form-control-label">{{form.model.label}}</label>
+
+                         <div class="col-sm-3">
+                             <div class="row">
+                                 <div class="col-sm-12">
+                             {{ form.model|attr:"class:form-control" }}
+                                     </div>
+                                 </div>
+                             {% errors form.model.errors %}
+                         </div>
+                     </div>
+
+                     {% for feature, uiElements  in form.featureElements.items %}
+
+
+                     {% for uiElement in form %}
+
+                     {% if uiElement.html_name in uiElements %}
+                     <div class="form-group row {% if uiElement.field.required  %} required {% endif %} {% if uiElement.errors%} has-danger {% endif %}">
+                         {% if uiElement.html_name in form.choiceElements%}
+                         <label class="col-sm-2 form-control-label">  {{uiElement.label}}</label>
+                         <div class="col-sm-8">
+                             <div class="row">
+
+                                     {% for choice in uiElement.field.choices %}
+                                 <div class="col-sm-4">
+                                     <div class="checkbox">
+                                         <label>
+                                             <input type="checkbox" name="{{ uiElement.html_name }}" {% if choice.0 in uiElement.value %} checked="checked" {% endif %} id="id_{{ uiElement.html_name }}_{{ forloop.counter }}" value="{{choice.0}}">
+                                             {{choice.1}}
+                                         </label>
+                                     </div>
+                                 </div>
+                                     {% endfor %}
+
+                             </div>
+                               {% errors uiElement.errors %}
+                         </div>
+                         {% elif uiElement.html_name in form.radioElements %}
+                         <label class="col-sm-2 form-control-label">  {{uiElement.label}}</label>
+                         <div class="col-sm-6">
+                                <div class="row">
+                                    <div class="col-sm-12">
+
+                                 {% for choice in uiElement.field.choices %}
+
+
+                                         <label class="radio-inline">
+                                             <input type="radio" name="{{ uiElement.html_name }}" {% if choice.0 in uiElement.value %} checked="checked" {% endif %} id="id_{{ uiElement.html_name }}_{{ forloop.counter }}" value="{{choice.0}}">
+                                             {{choice.1}}
+                                         </label>
+
+
+                                 {% endfor %}
+                                 </div>
+                                </div>
+                             {% errors uiElement.errors %}
+
+                         </div>
+                         {% else %}
+
+                         <label class="col-sm-2 form-control-label">  {{uiElement.label}}</label>
+                         <div class="col-sm-2">
+                             <div class="row">
+                                 <div class="col-sm-12">
+                             {{uiElement |attr:"class:form-control"}}
+                                     </div>
+                                 </div>
+                             {% errors uiElement.errors %}
+                         </div>
+                         {% endif %}
+
+
+                     </div>
+                     {% endif %}
+                     {% endfor %}
+
+                     {% endfor %}
+
+
+                     <div class="form-group row required {% if form.description.errors%} has-danger {% endif %}">
+                         <label  class="col-sm-2 form-control-label">{{form.description.label}}</label>
+
+                         <div class="col-sm-10">
+                             <div class="row">
+                                 <div class="col-sm-12">
+                             {{ form.description  }}
+                                     </div>
+                                 </div>
+                             {% errors form.description.errors %}
+                         </div>
+                     </div>
 
 
 
-             <div class="form-group row">
-                 <label  class="col-sm-2 form-control-label">Contact number</label>
+                     <div class="form-group row">
+                         <label  class="col-sm-2 form-control-label">Images</label>
 
-                 <div class="col-sm-2">
+                         <div class="col-sm-2">
 
-                         {{ form.contactNumber|attr:"class:form-control"|attr:"placeholder:Contact number" }}
+                             <input id="upload" type="button" value="Upload" class="btn btn-primary" >
 
-                 </div>
-             </div>
+                         </div>
 
-             <div class="form-group row">
-                 <label  class="col-sm-2 form-control-label">Email</label>
-
-                 <div class="col-sm-3">
-                         {{ form.email|attr:"class:form-control"|attr:"placeholder:Email" }}
-
-                 </div>
-             </div>
+                         <div class="col-sm-6 invisible" id="image-container">
 
 
+                                 <progress class="progress progress-striped progress-animated" id="total_progress" value="0" min="0" max="100"></progress>
 
-             <div class="form-group row">
-                 <label  class="col-sm-2 form-control-label"></label>
-                 <div class="col-sm-4">
-                     <button type="submit" class="btn btn-primary" id="submitButton">Save</button>
-                 </div>
-             </div>
+                         </div>
+
+                      </div>
+
+                     <div class="form-group row">
+                         <div class="col-sm-10 offset-sm-2">
+                             <div class="container">
 
 
+                                 <div  id="previews" class="row">
 
-
-         </form>
+                                     <div class="card-deck-wrapper">
+                                         <div class="card-deck">
 
 
 
+                                     <div class="col-md-2" id="template" >
+
+
+                                         <div class="card card-inverse">
+                                             <img data-dz-thumbnail class="card-img img-thumbnail" data-src="..." alt="Card image cap">
+                                             <div class="card-img-overlay">
+
+                                                     <button data-dz-remove class="btn btn-sml btn-danger image-bottom"> <i class="fa fa-times" aria-hidden="true"></i></button>
+
+                                             </div>
+                                         </div>
+
+                                     </div>
+
+                                         </div>
+                                         </div>
+
+
+                             </div>
+
+                           </div>
+                         </div>
+                      </div>
+
+                     <div class="form-group row">
+                         <label  class="col-sm-2 form-control-label">{{form.price.label}}</label>
+
+                         <div class="col-sm-2">
+                             <div class="input-group">
+                                 <div class="input-group-addon">Rs</div>
+                                 {{ form.price|attr:"class:form-control"|attr:"placeholder:Amount" }}
+                             </div>
+                         </div>
+                     </div>
+
+
+
+                    <div class="form-group row">
+
+                        <div class="col-sm-10 offset-sm-2">
+
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    {{ form.negotiable|attr:"class:form-check-input"}}
+                                    {{form.negotiable.label}}
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    {{ form.exchangeable|attr:"class:form-check-input"}}
+                                    {{form.exchangeable.label}}
+                                </label>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+
+
+                     <div class="form-group row">
+                         <label  class="col-sm-2 form-control-label">Contact number</label>
+
+                         <div class="col-sm-2">
+
+                                 {{ form.contactNumber|attr:"class:form-control"|attr:"placeholder:Contact number" }}
+
+                         </div>
+                     </div>
+
+                     <div class="form-group row">
+                         <label  class="col-sm-2 form-control-label">Email</label>
+
+                         <div class="col-sm-3">
+                                 {{ form.email|attr:"class:form-control"|attr:"placeholder:Email" }}
+
+                         </div>
+                     </div>
+
+
+
+                     <div class="form-group row">
+                         <label  class="col-sm-2 form-control-label"></label>
+                         <div class="col-sm-4">
+                             <button type="submit" class="btn btn-primary" id="submitButton">Save</button>
+                         </div>
+                     </div>
+
+
+
+
+                 </form>
+
+
+
+                </div>
+
+
+            </div>
         </div>
 
-
     </div>
+
 </div>
-
-
 
 
 {% endblock %}

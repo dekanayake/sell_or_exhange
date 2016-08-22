@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from .models import Category
+from .models import Location
 from .models import Product
 from .models import ProductData
 from .models import TemporyProductImage
@@ -40,25 +41,48 @@ def select_category(request,category_id="-1"):
     if (categoryChildExists):
         return render(request, 'product/selectCategory.html', {'categoryList': categoryList,'selectedCategory':selectedCategory,'noChild':noChild})
     else:
-        return redirect('add_product', selected_category_id = category_id)
+        return redirect('%s?%s' % ('/products/selectLocation',urllib.urlencode({'category':selectedCategory.id})))
+
+def select_location(request,location_id="-1"):
+    locationList = []
+    selectedLocation = ""
+    noChild = False
+    location_id_long_value = -1
+
+    categoryID = long(request.GET.get('category'))
+    selectedCategory = Category.objects.get(pk=categoryID)
 
 
-def add_product(request,selected_category_id,random_key = -1):
+    if (location_id == "-1"):
+        locationList = Location.objects.filter(parentLocation__isnull = True)
+    else:
+        location_id_long_value = long(location_id)
+        selectedLocation = Location.objects.get(pk= location_id_long_value)
+        locationList = Location.objects.filter(parentLocation__id = location_id_long_value)
+
+    locationChildExists = locationList.exists()
+    if (locationChildExists):
+        return render(request, 'product/selectLocation.html', {'locationList': locationList,'selectedLocation':selectedLocation,'selectedCategory':selectedCategory})
+    else:
+        return redirect('add_product', selected_category_id = categoryID, selected_location_id = location_id)
+
+
+
+def add_product(request,selected_category_id, selected_location_id,random_key = -1):
     random_number = random.getrandbits(128)
-    selected_category_long_id = long(selected_category_id)
+    selectedCategory = Category.objects.get(pk= long(selected_category_id))
+    selectedLocation = Location.objects.get(pk= long(selected_location_id))
     if request.method == 'POST':
-        form = ProductForm(data=request.POST,category=selected_category_long_id)
-        selectedCategory = Category.objects.get(pk= selected_category_long_id)
+        form = ProductForm(data=request.POST,category=long(selected_location_id))
         if form.is_valid():
-            productId = __saveProduct(form, selectedCategory, random_key)
+            productId = __saveProduct(form, selectedCategory, selectedLocation, random_key)
             return redirect('show_product', product_id = productId)
         else:
             return render(request, 'product/addProduct.html', {'selectedCategory':selectedCategory,'form':form})
 
     else:
-        productForm =  ProductForm(category=selected_category_long_id)
-        selectedCategory = Category.objects.get(pk= selected_category_long_id)
-        return render(request, 'product/addProduct.html', {'selectedCategory':selectedCategory,'form':productForm,'randomNumber':random_number})
+        productForm =  ProductForm(category=long(selected_location_id))
+        return render(request, 'product/addProduct.html', {'selectedCategory':selectedCategory,'selectedLocation':selectedLocation,'form':productForm,'randomNumber':random_number})
 
 def show_product(request,product_id):
     loadedProduct = Product.objects.get(pk=product_id)
@@ -113,9 +137,10 @@ def product_images(request,imagePK,type):
 
 
 
-def __saveProduct(productForm, selectedCategory, randomKey):
+def __saveProduct(productForm, selectedCategory,selectedLocation, randomKey):
     savedProduct  = productForm.save(commit=False)
     savedProduct.category = selectedCategory
+    savedProduct.location = selectedLocation
     savedProduct.status = 'CREATED'
     savedProduct.postedDate = datetime.now()
     savedProduct.save()

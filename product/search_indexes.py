@@ -13,6 +13,7 @@ class ProductIndex(CelerySearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     condition  = indexes.CharField(model_attr='condition',faceted=True)
     category = indexes.MultiValueField(faceted=True)
+    location = indexes.MultiValueField(faceted=True)
     variants = indexes.MultiValueField(faceted=True)
     price = indexes.FloatField(model_attr='price',null=True)
     brand = indexes.CharField(model_attr='brand',faceted=True,null=True)
@@ -35,7 +36,6 @@ class ProductIndex(CelerySearchIndex, indexes.Indexable):
 
     def prepare_previewImageURL(self,obj):
         productImages = ProductImage.objects.filter(product__pk=obj.pk)
-        logging.warn('-------------preview image - --------------')
         if productImages:
             firstImage = productImages[0]
             imageToSend = ProductImage.objects.get(pk=firstImage.pk)
@@ -43,8 +43,6 @@ class ProductIndex(CelerySearchIndex, indexes.Indexable):
             pathWithoutExtension = url[0:url.find('.') - 1]
             fileExtension = url[url.find('.') + 1:len(url)]
             url =    "%s_%s.%s" % (pathWithoutExtension,'thumbnail',fileExtension)
-            logging.warn('----------------requested path---------------------')
-            logging.warn(url)
             return url
         else:
             return None
@@ -63,6 +61,16 @@ class ProductIndex(CelerySearchIndex, indexes.Indexable):
             currentCategory = currentCategory.parentCategory
 
         return categoryArray + [-1]
+
+    def prepare_location(self, obj):
+        output = []
+        currentLocation = obj.location
+        locationArray = []
+        while (currentLocation is not None):
+            locationArray.append(currentLocation.pk)
+            currentLocation = currentLocation.parentLocation
+
+        return locationArray + [-1]
 
     def prepare_variants(self, obj):
         output = []

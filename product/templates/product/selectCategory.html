@@ -8,40 +8,63 @@ Add product
 {% block content %}
 
 
-<div class="card">
-    <div class="card-block">
+<div class="container">
 
-        <h4><span class="label label-pill {% if noChild %} label-warning {% else %}  label-success {% endif%}">1</span> Choose a category</h4>
+    <div class="row">
 
+            <div class="card">
+                <div class="card-block">
 
-        {% if selectedCategory %}
-        {{selectedCategory}} <a href="/products/selectCategory/{{ selectedCategory.parentCategory.id }}"> <i class="fa fa-pencil" aria-hidden="true"></i></a>
-        {% endif %}
-
+                    <h5><span class="tag tag-pill {% if noChild %} tag-warning {% else %}  tag-success {% endif%}">1</span> Choose a category</h5>
 
 
+                    {% if selectedCategory %}
+                    {{selectedCategory}} <a href="/products/selectCategory/{{ selectedCategory.parentCategory.id }}"> <i class="fa fa-pencil" aria-hidden="true"></i></a>
+                    {% endif %}
 
 
-        <ul class="list-group row">
-        {% for category in categoryList %}
-            <li class="list-group-item col-xs-4" style="border:none"><a href="/products/selectCategory/{{ category.id }}">{{category.name}}</a> </li>
-        {% endfor %}
-        </ul>
 
 
+
+                    <ul class="list-group row">
+                    {% for category in categoryList %}
+                        <li class="list-group-item col-xs-4" style="border:none"><a href="/products/selectCategory/{{ category.id }}">{{category.name}}</a> </li>
+                    {% endfor %}
+                    </ul>
+
+
+
+                </div>
+            </div>
 
     </div>
+
+    <div class="row">
+
+            <div class="card">
+                <div class="card-block">
+
+                    <h5><span class="tag tag-pill  tag-warning ">2</span> Select location</h5>
+
+
+                </div>
+            </div>
+
+    </div>
+
+    <div class="row">
+
+            <div class="card">
+                <div class="card-block">
+
+                    <h5><span class="tag tag-pill  tag-warning ">3</span> Information of the add</h5>
+
+
+               </div>
+            </div>
+
+    </div>
+
 </div>
-
-<div class="card">
-    <div class="card-block">
-
-        <h4><span class="label label-pill  label-warning ">1</span> Information of the add</h4>
-
-
-</div>
-</div>
-
-
 
 {% endblock %}

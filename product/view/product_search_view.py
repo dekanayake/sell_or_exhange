@@ -8,6 +8,7 @@ from product.models import ProductDataSelectValue
 from  product.models import SelectProductAttributeValues
 from  product.models import ProductAttribute
 from  product.models import Category
+from  product.models import Location
 import re
 import logging
 from django.conf import settings
@@ -15,7 +16,7 @@ from django.conf import settings
 class ProductSearchView(BaseFacetedSearchView):
     template_name = 'product/product_search.html'
     form_class = ProductSearchForm
-    facet_fields = ['category']
+    facet_fields = ['category','location']
 
     def get_form_kwargs(self):
         kwargs = super(ProductSearchView, self).get_form_kwargs()
@@ -46,8 +47,12 @@ class ProductSearchView(BaseFacetedSearchView):
         ProductSearchView.__updateVariantFacetCounts(self.request, context, facet_fields)
 
         context.update({'categoryList' : ProductSearchView.__getCategoryTree()})
+        context.update({'locationList' : ProductSearchView.__getLocationTree()})
         if "category" in facet_fields:
             ProductSearchView.__updateCategoryFacetCounts(self.request, facet_fields['category'],context)
+
+        if "location" in facet_fields:
+            ProductSearchView.__updateLocationFacetCounts(self.request, facet_fields['location'],context)
 
         if "condition" in facet_fields:
             ProductSearchView.__updateFacetCounts(self.request,'condition', facet_fields['condition'],context)
@@ -90,9 +95,6 @@ class ProductSearchView(BaseFacetedSearchView):
                 if start_page < 1:
                     start_page = 1
 
-            logging.warn('--------------------------------')
-            logging.warn(start_page)
-            logging.warn(end_page)
             page_range_array = []
             for page_num in range(start_page,end_page + 1):
                 page_range_array.append(page_num)
@@ -185,6 +187,82 @@ class ProductSearchView(BaseFacetedSearchView):
         if category_facet_hide:
             context.update({'category_facet_hide':True})
             context.update({'category_facet_expand_url':ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&category_facet_hide=Y'])})
+
+
+    @staticmethod
+    def __updateLocationFacetCounts(request,facet_fields,context):
+        selected_location = None
+
+        selected_facets = dict(map(lambda i:  (i.split(':',1)[0],i.split(':',1)[1]),request.GET.getlist("selected_facets")))
+        if ('location_exact' in selected_facets):
+            selected_location = selected_facets['location_exact']
+
+        if not selected_location:
+            selected_category = request.GET.get('location')
+
+
+        @cached_as(Location, extra=selected_location)
+        def __getParentLocationTree():
+            parentLocationList = []
+            if (selected_location and (not selected_location== "-1")):
+                currentLocation = Location.objects.get(pk=long(selected_location))
+                if not currentLocation.location_set.all():
+                    parentLocation = currentLocation.parentLocation
+                else:
+                    parentLocation = currentLocation
+                parentLocationList = []
+                while (parentLocation is not None):
+                    parentLocationList.append((parentLocation.pk,parentLocation.name))
+                    parentLocation = parentLocation.parentLocation
+
+            parentLocationDict = {}
+            tempParentLocationDict = parentLocationDict
+            childLocationDict = {}
+            parentLocations = [(-1,'All locations')] + list(reversed(parentLocationList))
+            for parentLocation in parentLocations:
+                childLocationDict = {}
+                tempParentLocationDict[parentLocation] = childLocationDict
+                tempParentLocationDict = childLocationDict
+
+            return parentLocationDict
+
+        @cached_as(Location, extra=selected_location)
+        def __getChildLocations():
+            if (selected_location and (not selected_location == "-1")):
+                currentLocation = Location.objects.get(pk=long(selected_location))
+                childLocations  = currentLocation.location_set.all()
+                if not childLocations:
+                    childLocations = Location.objects.get(pk=currentLocation.parentLocation.pk).location_set.all()
+            else:
+                childLocations  = ProductSearchView.__getParentLocations()
+            return childLocations
+
+        @cached_as(Location, extra=selected_location)
+        def __getSelectedLocation():
+            if selected_location == "-1":
+                return (-1,"All locations")
+            else:
+                currentLocation = Location.objects.get(pk=long(selected_location))
+                return (currentLocation.pk, currentLocation.name)
+
+
+        facetFieldsDict = dict(map(lambda i: (i[0],i[1]), facet_fields))
+        childLocationArray = []
+        for childLocation in __getChildLocations():
+            if str(childLocation.pk) in facetFieldsDict:
+                childLocationArray.append((childLocation.pk,childLocation.name, facetFieldsDict[str(childLocation.pk)]))
+
+
+        context.update({'location_facet_location_tree':__getParentLocationTree()})
+        context.update({'location_facet_child_locations':childLocationArray})
+        if selected_location:
+            context.update({'selected_location':__getSelectedLocation()})
+        context.update({'location_selected_facet_url':ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&selected_facets=location_exact:.*','&location=.*'])})
+        category_facet_hide = request.GET.get('location_facet_hide')
+        if category_facet_hide:
+            context.update({'location_facet_hide':True})
+            context.update({'location_facet_expand_url':ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&location_facet_hide=Y'])})
+
 
     @staticmethod
     def __updateFacetCounts(request, facet_name, facet_fields, context):
@@ -294,6 +372,11 @@ class ProductSearchView(BaseFacetedSearchView):
         return Category.objects.filter(parentCategory__isnull = True)
 
     @staticmethod
+    @cached_as(Location)
+    def __getParentLocations():
+        return Location.objects.filter(parentLocation__isnull = True)
+
+    @staticmethod
     @cached_as(Category)
     def __getCategoryTree():
 
@@ -328,4 +411,41 @@ class ProductSearchView(BaseFacetedSearchView):
 
 
         newTree = {k: v for k, v in categoryTree.items() if k[0] in map(lambda i : i.pk ,categoryDict[-1])}
+        return newTree
+
+    @staticmethod
+    @cached_as(Location)
+    def __getLocationTree():
+
+        locationList = Location.objects.all()
+        locationDict = {}
+        for location in locationList:
+            parentLocationID = -1
+            if location.parentLocation:
+                parentLocationID = location.parentLocation.pk
+
+            locationDict.setdefault(parentLocationID,[]).append(location)
+
+        locationList = locationDict[-1]
+        locationListTmp = []
+
+
+        locationTree = {}
+        while locationList:
+            for location in locationList:
+                childTree = {}
+                if location.parentLocation:
+                    childTree = locationTree.get((location.parentLocation.pk,location.parentLocation.name))
+
+                nodeTree = {}
+                childTree[(location.pk,location.name)] = nodeTree
+                locationTree[(location.pk,location.name)] = nodeTree
+                if location.pk in locationDict:
+                    locationListTmp.append(locationDict[location.pk])
+
+            locationList =  [val for sublist in locationListTmp for val in sublist]
+            locationListTmp = []
+
+
+        newTree = {k: v for k, v in locationTree.items() if k[0] in map(lambda i : i.pk ,locationDict[-1])}
         return newTree

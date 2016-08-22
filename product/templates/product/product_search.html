@@ -37,10 +37,24 @@
                                 </select>
                             </div>
                             <div class="col-xs-3">
-                                <select class="form-control">
-                                    <option value="" disabled selected hidden>Location</option>
-                                    <option>Test</option>
-                                </select>
+                                    <select class="form-control" name="{{ form.location.html_name }}" id="{{ form.location.id_for_label }}"  >
+                                        {% if selected_location%}
+                                            <option value="{{selected_location.0}}" selected hidden>{{selected_location.1}}</option>
+                                        {% else%}
+                                            <option value="1" disabled  selected hidden>Location</option>
+                                        {% endif %}
+                                            <option value="-1">All Locations</option>
+                                        {% for location,childLocations in locationList.items %}
+
+                                            <option value="{{location.0}}" > {{location.1}}</option>
+
+                                            {% if childLocations %}
+                                                {% for childLocation in childLocations.keys %}
+                                                     <option value="{{childLocation.0}}" {% ifequal childLocation.0|slugify  form.location.value %} selected {% endifequal %}> &nbsp;&nbsp;&nbsp;{{childLocation.1}}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
                             </div>
                             <div class="col-xs-1">
 
@@ -100,6 +114,9 @@
                   </div>
                   {% endif %}
             </div>
+
+            {% include "product/product_search/location_facet.html" %}
+
             {% if condition_facet_fields %}
                 {% include "product/product_search/facet.html" with facet_name="condition" facet_display_name="Condition" facet_fields=condition_facet_fields selected_facet=condition_facet_selected_facet selected_facet_url=condition_facet_selected_facet_url facet_hide=condition_facet_hide facet_expand_url=condition_facet_expand_url %}
             {% endif %}

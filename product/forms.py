@@ -110,6 +110,7 @@ class ProductSearchForm(FacetedSearchForm):
         super(ProductSearchForm, self).__init__(*args, **kwargs)
 
     category = forms.CharField(required=False)
+    location = forms.CharField(required=False)
     minPrice = forms.CharField(required=False)
     maxPrice = forms.CharField(required=False)
 
@@ -118,6 +119,9 @@ class ProductSearchForm(FacetedSearchForm):
 
         if self.cleaned_data['category']:
                 sqs = sqs.filter(category__exact=self.cleaned_data['category'])
+
+        if self.cleaned_data['location']:
+                sqs = sqs.filter(location__exact=self.cleaned_data['location'])
 
         if self.cleaned_data['minPrice']:
                 sqs = sqs.filter(price__gte=long(self.cleaned_data['minPrice']))

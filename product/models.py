@@ -35,6 +35,30 @@ class Category(models.Model):
 
         return output
 
+class Location(models.Model):
+    name = models.CharField(max_length=300)
+    parentLocation =  models.ForeignKey('self',null=True,blank=True)
+
+    def __str__(self):
+        return self.getLocationLabel()
+
+
+    def getLocationLabel(self):
+        locationArray = []
+        currentLocation = self
+
+        while (currentLocation is not None):
+            locationArray.append(currentLocation.name)
+            currentLocation = currentLocation.parentLocation
+
+        output = ""
+        if (len(locationArray) == 1):
+            output = locationArray[0]
+        else:
+            output = " > ".join(list(reversed(locationArray)))
+
+        return output
+
 
 class Brand(models.Model):
     name = models.CharField(max_length=100)
@@ -56,6 +80,7 @@ class Product(models.Model):
     condition = models.CharField(max_length=1, choices=PRODUCT_CONDITIONS)
     description = models.TextField(max_length=20000)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10,decimal_places=2,null=True, blank=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, null=True)
     model = models.CharField(max_length=100, null=True)

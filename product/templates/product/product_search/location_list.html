@@ -1,0 +1,33 @@
+{% for parentLocation,childLocationTree in locationTree.items %}
+<ul >
+    <li><a href="{{location_selected_facet_url}}&amp;selected_facets=location_exact:{{ parentLocation.0|urlencode }} "
+           {% if selected_location.0 == parentLocation.0 %}
+           class="selected-facet"
+           {% endif %}>
+        <small>{{parentLocation.1}}
+            {% if not childLocations and not childLocationTree%}
+            (0)
+            {% endif %}
+        </small></a>
+        {% if childLocationTree %}
+        {% include "product/product_search/location_list.html" with locationTree=childLocationTree childLocations=childLocations selected_location=selected_location%}
+        {% elif childLocations %}
+        <ul>
+            {% for childLocation in childLocations %}
+            <li >
+                <a href="{{location_selected_facet_url}}&amp;selected_facets=location_exact:{{ childLocation.0|urlencode }}"
+                   {% if selected_location.0 == childLocation.0 %}
+                   class="selected-facet"
+                   {% endif %}
+                >
+                    <small>{{childLocation.1}} ({{childLocation.2}})</small>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+
+        {% endif %}
+    </li>
+</ul>
+
+{% endfor %}

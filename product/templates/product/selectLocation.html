@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}
+Add product
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="row">
+
+        <div class="card">
+            <div class="card-block">
+
+                <h5><span class="tag tag-pill  tag-success ">1</span> Choose a category</h5>
+
+                {% if selectedCategory %}
+                {{selectedCategory}} <a href="/products/selectCategory/{{ selectedCategory.parentCategory.id }}"> <i class="fa fa-pencil" aria-hidden="true"></i></a>
+                {% endif %}
+
+
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+
+
+            <div class="card">
+                <div class="card-block">
+
+                    <h5><span class="tag tag-pill {% if noChild %} tag-warning {% else %}  tag-success {% endif%}">2</span> Choose a location</h5>
+
+
+                    {% if selectedLocation %}
+                    {{selectedLocation}} <a href="/products/selectLocation/{{ selectedLocation.parentLocation.id }}?category={{selectedCategory.id}}"> <i class="fa fa-pencil" aria-hidden="true"></i></a>
+                    {% endif %}
+
+
+
+
+
+                    <ul class="list-group row">
+                        {% for location in locationList %}
+                        <li class="list-group-item col-xs-4" style="border:none"><a href="/products/selectLocation/{{ location.id }}?category={{selectedCategory.id}}">{{location.name}}</a> </li>
+                        {% endfor %}
+                    </ul>
+
+
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+
+            <div class="card">
+                <div class="card-block">
+
+                    <h5><span class="tag tag-pill  tag-warning ">3</span> Information of the add</h5>
+
+
+                </div>
+            </div>
+        </div>
+
+
+</div>
+
+{% endblock %}

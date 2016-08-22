@@ -1,0 +1,34 @@
+<div class="card ">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-xs-8">
+                <h7 class="card-title">
+                    Locations
+                </h7>
+                <div class="card-subtitle text-muted"><small>{{selected_location.1}}</small></div>
+            </div>
+            <div class="col-xs-4">
+                <a class="pull-right" href="
+                               {%if not location_facet_hide%}
+                                    {{ request.get_full_path }}&amp;location_facet_hide=Y
+                               {% else %}
+                                      {{ location_facet_expand_url }}
+                               {% endif %}
+                               ">
+                    {% if location_facet_hide %}
+                    <i class="fa fa-plus-square" aria-hidden="true"></i>
+                    {% else %}
+                    <i class="fa fa-minus-square" aria-hidden="true"></i>
+                    {% endif %}
+
+                </a>
+            </div>
+        </div>
+
+    </div>
+    {% if not location_facet_hide%}
+    <div class="card-block facets" >
+        {% include "product/product_search/location_list.html" with locationTree=location_facet_location_tree childLocations=location_facet_child_locations selected_location=selected_location%}
+    </div>
+    {% endif %}
+</div>
