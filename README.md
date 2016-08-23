@@ -238,3 +238,34 @@ Run
 
 curl http://localhost:8983/solr/product/update?commit=true -H "Content-Type: text/xml" --data-binary '<delete><query>*:*</query></delete>'
 ```
+
+** Geo spatial search **
+
+Install geos
+
+```
+#!shell
+$ wget http://download.osgeo.org/geos/geos-3.4.2.tar.bz2
+$ tar xjf geos-3.4.2.tar.bz2
+```
+
+```
+#!shell
+$ cd geos-3.4.2
+$ ./configure
+$ make
+$ sudo make install
+$ cd ..
+```
+
+set environment path
+
+#!shell
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+```
+
+install geopy fro distance search
+
+#!shell
+pip install geopy
+```
