@@ -260,12 +260,14 @@ $ cd ..
 
 set environment path
 
+```
 #!shell
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 ```
 
 install geopy fro distance search
 
+```
 #!shell
 pip install geopy
 ```
