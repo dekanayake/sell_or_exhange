@@ -26,6 +26,13 @@ class ProductSearchView(BaseFacetedSearchView):
         kwargs.update({
             'sort_by':self.request.GET.get('sort_by')
         })
+
+        user_coords_in_request = self.request.GET.get('search_around')
+        if (user_coords_in_request):
+            user_coords = tuple(map(lambda i: float(i),user_coords_in_request.split(',')))
+            kwargs.update({
+                'search_around':user_coords
+            })
         return kwargs
 
     def get_queryset(self):
@@ -36,6 +43,8 @@ class ProductSearchView(BaseFacetedSearchView):
         if (selected_category) or ('category_exact' in selected_facets):
             for facet_field in ['category','condition','brand','variants']:
                 qs = qs.facet(facet_field)
+
+
 
         return qs
 

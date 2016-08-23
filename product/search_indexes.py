@@ -1,11 +1,15 @@
 from haystack import indexes
 from celery_haystack.indexes import CelerySearchIndex
 from .models import Product
+from .models import Location
 from .models import ProductData
 from .models import ProductDataSelectValue
 from .models import ProductImage
 import logging
 import datetime
+import requests
+from django.conf import settings
+from cacheops import cached_as
 
 
 
@@ -24,12 +28,34 @@ class ProductIndex(CelerySearchIndex, indexes.Indexable):
     title = indexes.CharField(model_attr='title',indexed=False)
     description = indexes.CharField(model_attr='description',indexed=False)
     previewImageURL = indexes.CharField(indexed=False)
+    geoLocation = indexes.LocationField(null=True)
 
     def get_model(self):
         return Product
 
     def prepare_brand(self,obj):
             return obj.brand.name
+
+    def prepare_geoLocation(self,obj):
+        locationName = obj.location.name
+
+        @cached_as(Location,extra=locationName)
+        def __getCorrdinates():
+            print '[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]'
+            payload = {'address': locationName, 'components':'country:%s' % settings.GOOGLE_MAP_API_SEARCH_COUNTRY_CODE,'key': settings.GOOGLE_MAP_API_KEY}
+            request = requests.get(settings.GOOGLE_MAP_API_RESUORCE_URL, params=payload)
+            result = request.json()
+            if (result["status"] == "OK"):
+                lat = request.json()["results"][0]['geometry']['location']["lat"]
+                lng = request.json()["results"][0]['geometry']['location']["lng"]
+                return "%s,%s" % (lat, lng)
+            else:
+                return None
+
+        result = __getCorrdinates()
+        return result
+
+
 
     def prepare_condition(self,obj):
         return dict(Product.PRODUCT_CONDITIONS).get(obj.condition)

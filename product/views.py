@@ -73,7 +73,7 @@ def add_product(request,selected_category_id, selected_location_id,random_key = 
     selectedCategory = Category.objects.get(pk= long(selected_category_id))
     selectedLocation = Location.objects.get(pk= long(selected_location_id))
     if request.method == 'POST':
-        form = ProductForm(data=request.POST,category=long(selected_location_id))
+        form = ProductForm(data=request.POST,category=long(selected_category_id))
         if form.is_valid():
             productId = __saveProduct(form, selectedCategory, selectedLocation, random_key)
             return redirect('show_product', product_id = productId)
@@ -81,7 +81,7 @@ def add_product(request,selected_category_id, selected_location_id,random_key = 
             return render(request, 'product/addProduct.html', {'selectedCategory':selectedCategory,'form':form})
 
     else:
-        productForm =  ProductForm(category=long(selected_location_id))
+        productForm =  ProductForm(category=long(selected_category_id))
         return render(request, 'product/addProduct.html', {'selectedCategory':selectedCategory,'selectedLocation':selectedLocation,'form':productForm,'randomNumber':random_number})
 
 def show_product(request,product_id):

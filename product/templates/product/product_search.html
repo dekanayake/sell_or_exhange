@@ -36,7 +36,8 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="col-xs-3">
+                            <div class="col-xs-3 form-inline">
+
                                     <select class="form-control" name="{{ form.location.html_name }}" id="{{ form.location.id_for_label }}"  >
                                         {% if selected_location%}
                                             <option value="{{selected_location.0}}" selected hidden>{{selected_location.1}}</option>
@@ -55,10 +56,14 @@
                                             {% endif %}
                                         {% endfor %}
                                     </select>
+                                    <a class="btn btn-outline-secondary" id="searchByGeoLocationBtn" data-url="{{request.get_full_path}}" role="button"> <i class="fa fa-location-arrow" aria-hidden="true"></i></a>
+
                             </div>
+
                             <div class="col-xs-1">
 
                                     <button type="submit" class="btn btn-primary">Search</button>
+
 
                             </div>
                         </div>
@@ -208,7 +213,26 @@
               window.location.href = url;
         });
 
+        $('#searchByGeoLocationBtn').bind('click',function() {
+           		$.geolocation.get({win: handleGetCurrentPosition, fail: onError});
+
+        });
+
+        function handleGetCurrentPosition(location){
+            var url = $("#searchByGeoLocationBtn").data("url");
+            coords = location.coords.longitude + ',' + location.coords.latitude;
+            url = url.concat('&search_around=' + escape(coords));
+
+             window.location.href = url;
+        }
+
+        function onError(error){
+            window.alert(error);
+        }
+
    });
+
+
 </script>
 
 {% endblock %}

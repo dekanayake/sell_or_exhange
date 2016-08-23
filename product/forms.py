@@ -9,6 +9,7 @@ from django_summernote.widgets import SummernoteWidget
 import logging
 from django.utils.safestring import mark_safe
 from haystack.forms import FacetedSearchForm
+from haystack.utils.geo import Point, D
 
 
 
@@ -107,6 +108,7 @@ class ProductSearchForm(FacetedSearchForm):
     def __init__(self, *args, **kwargs):
         self.selected_facets_or = kwargs.pop("selected_facets_or", [])
         self.sort_by = kwargs.pop("sort_by",None)
+        self.search_around = kwargs.pop('search_around',None)
         super(ProductSearchForm, self).__init__(*args, **kwargs)
 
     category = forms.CharField(required=False)
@@ -131,6 +133,11 @@ class ProductSearchForm(FacetedSearchForm):
 
         if self.sort_by:
                 sqs = sqs.order_by(self.sort_by)
+
+        if (self.search_around):
+                user_location = Point(self.search_around[0],self.search_around[1])
+                max_dist = D(mi=35)
+                sqs =  sqs.dwithin('geoLocation', user_location, max_dist)
 
         or_facets = {}
         for facet in self.selected_facets_or:
