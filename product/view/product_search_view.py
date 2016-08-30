@@ -72,8 +72,21 @@ class ProductSearchView(BaseFacetedSearchView):
         ProductSearchView.__updatePriceRangeFacet(self.request, context)
         ProductSearchView.__updateSoryByContext(self.request, context)
         ProductSearchView.__updatePaginationContext(self.request, context)
+        ProductSearchView.__updateSearchByLocationContext(self.request,context)
 
         return context
+
+    @staticmethod
+    def __updateSearchByLocationContext(request,context):
+        search_around = request.GET.get('search_around')
+        if search_around:
+            context.update({'search_around_enable':True})
+            context.update({'search_around_url':ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&search_around=.*'])})
+        else:
+            cleaned_request_full_path = ProductSearchView.__removeCommonParamsFromURL(request)
+            context.update({'search_around_url':ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&selected_facets=location_exact:.*','&location=.*'])})
+            context.update({'search_around_enable':False})
+
 
     @staticmethod
     def __updatePaginationContext(request, context):
@@ -191,7 +204,8 @@ class ProductSearchView(BaseFacetedSearchView):
         context.update({'category_facet_child_categories':childCategoryArray})
         if selected_category:
             context.update({'selected_category':__getSelectedCategory()})
-        context.update({'category_selected_facet_url':ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&selected_facets=category_exact:.*','&category=.*'])})
+        cleaned_request_full_path = ProductSearchView.__removeCommonParamsFromURL(request)
+        context.update({'category_selected_facet_url':ProductSearchView.__removeParamsFromURL(cleaned_request_full_path,['&selected_facets=category_exact:.*','&category=.*'])})
         category_facet_hide = request.GET.get('category_facet_hide')
         if category_facet_hide:
             context.update({'category_facet_hide':True})
@@ -266,7 +280,8 @@ class ProductSearchView(BaseFacetedSearchView):
         context.update({'location_facet_child_locations':childLocationArray})
         if selected_location:
             context.update({'selected_location':__getSelectedLocation()})
-        context.update({'location_selected_facet_url':ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&selected_facets=location_exact:.*','&location=.*'])})
+        cleaned_request_full_path = ProductSearchView.__removeCommonParamsFromURL(request)
+        context.update({'location_selected_facet_url':ProductSearchView.__removeParamsFromURL(cleaned_request_full_path,['&selected_facets=location_exact:.*','&location=.*'])})
         category_facet_hide = request.GET.get('location_facet_hide')
         if category_facet_hide:
             context.update({'location_facet_hide':True})
@@ -285,7 +300,9 @@ class ProductSearchView(BaseFacetedSearchView):
         context.update({'%s_facet_fields' % facet_name:facet_fields})
         if selected_facet:
             context.update({'%s_facet_selected_facet' % facet_name: selected_facet})
-        selected_facet_url = ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&selected_facets=%s_exact:.*' % facet_name])
+
+        cleaned_request_full_path = ProductSearchView.__removeCommonParamsFromURL(request)
+        selected_facet_url = ProductSearchView.__removeParamsFromURL(cleaned_request_full_path,['&selected_facets=%s_exact:.*' % facet_name])
         context.update({'%s_facet_selected_facet_url' % facet_name: selected_facet_url })
 
         facet_hide = request.GET.get('%s_facet_hide' % facet_name)
@@ -304,7 +321,8 @@ class ProductSearchView(BaseFacetedSearchView):
         if maxPrice:
             context.update({'price_facet_max_price':maxPrice})
 
-        price_filter_url = ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&minPrice=.*','&maxPrice=.*'])
+        cleaned_request_full_path = ProductSearchView.__removeCommonParamsFromURL(request)
+        price_filter_url = ProductSearchView.__removeParamsFromURL(cleaned_request_full_path,['&minPrice=.*','&maxPrice=.*'])
         context.update({'price_facet_filter_url':price_filter_url})
 
         facet_hide = request.GET.get('price_facet_hide')
@@ -342,7 +360,8 @@ class ProductSearchView(BaseFacetedSearchView):
             selected_attribute = ProductAttribute.objects.get(pk=long(selected_variant_or.split('>',1)[0])).pk
             selected_facet_name = SelectProductAttributeValues.objects.get(pk=long(selected_variant_or.split('>',1)[1])).name
             selected_variant_names.setdefault(selected_attribute,[]).append((selected_variant_or,selected_facet_name))
-            selected_variants_or_url_dict[selected_variant_or] = ProductSearchView.__removeParamsFromURL(request.get_full_path(),["&selected_facets_or=variants_exact:%s" % (urllib.quote(selected_variant_or))])
+            cleaned_request_full_path = ProductSearchView.__removeCommonParamsFromURL(request)
+            selected_variants_or_url_dict[selected_variant_or] = ProductSearchView.__removeParamsFromURL(cleaned_request_full_path,["&selected_facets_or=variants_exact:%s" % (urllib.quote(selected_variant_or))])
 
         selected_facets = map(lambda i:  (i.split(':',1)[0],i.split(':',1)[1]),request.GET.getlist("selected_facets"))
         selected_variants = map(lambda i: i[1],filter(lambda i : i[0] == 'variants_exact' , selected_facets))
@@ -351,7 +370,8 @@ class ProductSearchView(BaseFacetedSearchView):
             selected_attribute = ProductAttribute.objects.get(pk=long(selected_variant.split('>',1)[0])).pk
             selected_facet_name = SelectProductAttributeValues.objects.get(pk=long(selected_variant.split('>',1)[1])).name
             selected_variant_names[selected_attribute] = (selected_variant,selected_facet_name)
-            selected_variants_url_dict[selected_variant] = ProductSearchView.__removeParamsFromURL(request.get_full_path(),["&selected_facets=variants_exact:%s" % (urllib.quote(selected_variant))])
+            cleaned_request_full_path = ProductSearchView.__removeCommonParamsFromURL(request)
+            selected_variants_url_dict[selected_variant] = ProductSearchView.__removeParamsFromURL(cleaned_request_full_path,["&selected_facets=variants_exact:%s" % (urllib.quote(selected_variant))])
 
         if (selected_variants_or + selected_variants):
             context.update({'variants_facets_selected_variant_names':selected_variant_names})
@@ -371,6 +391,17 @@ class ProductSearchView(BaseFacetedSearchView):
     def __removeParamsFromURL(requestURL, regxToRemoveList):
         url = requestURL
         for regxPattern in regxToRemoveList:
+            url = re.sub(regxPattern,'',url)
+        return url
+
+    @staticmethod
+    def __removeCommonParamsFromURL(request):
+        regxPatterns = []
+        if request.GET.get('page'):
+            regxPatterns.append('&page=.*')
+
+        url = request.get_full_path()
+        for regxPattern in regxPatterns:
             url = re.sub(regxPattern,'',url)
         return url
 

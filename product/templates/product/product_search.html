@@ -9,6 +9,13 @@
     <div class="row">
         <div class="col-sm-12">
 
+                <div class="invisible" id="alertBox" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <span id="alertContent"></span>
+                </div>
+
 
                 <div class="card card-block">
                     <form method="get" action="/products/search">
@@ -56,7 +63,14 @@
                                             {% endif %}
                                         {% endfor %}
                                     </select>
-                                    <a class="btn btn-outline-secondary" id="searchByGeoLocationBtn" data-url="{{request.get_full_path}}" role="button"> <i class="fa fa-location-arrow" aria-hidden="true"></i></a>
+
+                                    {% if search_around_enable %}
+                                         <a class="btn btn-warning" id="searchByGeoLocationBtn" data-url="{{search_around_url}}" role="button"> <i class="fa fa-location-arrow" aria-hidden="true"></i></a>
+                                    {% else %}
+                                         <a class="btn btn-secondary" id="searchByGeoLocationBtn" data-url="{{search_around_url}}" role="button"> <i class="fa fa-location-arrow" aria-hidden="true"></i></a>
+                                    {% endif %}
+
+
 
                             </div>
 
@@ -214,21 +228,49 @@
         });
 
         $('#searchByGeoLocationBtn').bind('click',function() {
-           		$.geolocation.get({win: handleGetCurrentPosition, fail: onError});
+           		var source = Rx.DOM.geolocation.getCurrentPosition({timeout:60000});
+
+           		  var subscription = source.subscribe(
+                  function (pos) {
+                    Pace.options = {
+                        ajax:false,
+                        document:false
+                    }
+                    Pace.start();
+                    var url = $("#searchByGeoLocationBtn").data("url");
+                    coords = pos.coords.longitude + ',' + pos.coords.latitude;
+                    url = url.concat('&search_around=' + escape(coords));
+
+                     window.location.href = url;
+                  },
+                  function (err) {
+                    var message = '';
+                    switch (err.code) {
+                      case err.PERMISSION_DENIED:
+                        setErrorToNearByButton();
+                        break;
+                      case err.POSITION_UNAVAILABLE:
+                        setErrorToNearByButton();
+                        break;
+                      case err.PERMISSION_DENIED_TIMEOUT:
+                        setErrorToNearByButton();
+                        break;
+                    }
+                  },
+                  function () {
+                    Pace.stop();
+                  });
 
         });
 
-        function handleGetCurrentPosition(location){
-            var url = $("#searchByGeoLocationBtn").data("url");
-            coords = location.coords.longitude + ',' + location.coords.latitude;
-            url = url.concat('&search_around=' + escape(coords));
 
-             window.location.href = url;
+        function setErrorToNearByButton() {
+             $('#searchByGeoLocationBtn').removeClass("btn-warning btn-secondary").addClass("btn-danger");
+             $('#alertContent').html('<strong> Cannot search by the near by items please try later </strong>');
+             $('#alertBox').removeClass("invisible").addClass("alert alert-danger alert-dismissible fade in");
         }
 
-        function onError(error){
-            window.alert(error);
-        }
+
 
    });
 
