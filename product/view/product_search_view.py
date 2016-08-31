@@ -73,8 +73,19 @@ class ProductSearchView(BaseFacetedSearchView):
         ProductSearchView.__updateSoryByContext(self.request, context)
         ProductSearchView.__updatePaginationContext(self.request, context)
         ProductSearchView.__updateSearchByLocationContext(self.request,context)
+        ProductSearchView.__updatePageRowViewModeContext(self.request,context)
 
         return context
+
+    @staticmethod
+    def __updatePageRowViewModeContext(request,context):
+        display_mode = request.GET.get('display_mode')
+        if (display_mode is None or display_mode == 'list'):
+            context.update({'display_mode':'list'})
+        elif display_mode == 'gallery' :
+            context.update({'display_mode':'gallery'})
+        context.update({'display_mode_url':ProductSearchView.__removeParamsFromURL(request.get_full_path(),['&display_mode=.*'])})
+
 
     @staticmethod
     def __updateSearchByLocationContext(request,context):

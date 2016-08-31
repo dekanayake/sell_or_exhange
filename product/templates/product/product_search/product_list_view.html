@@ -1,0 +1,3 @@
+{% for result in page_obj.object_list %}
+    {% include "product/product_search/product_row.html" with result=result %}
+{% endfor %}

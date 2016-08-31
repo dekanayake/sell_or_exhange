@@ -28,6 +28,7 @@ class ProductIndex(CelerySearchIndex, indexes.Indexable):
     title = indexes.CharField(model_attr='title',indexed=False)
     description = indexes.CharField(model_attr='description',indexed=False)
     previewImageURL = indexes.CharField(indexed=False)
+    thumbnailImageURL = indexes.CharField(indexed=False)
     geoLocation = indexes.LocationField(null=True)
 
     def get_model(self):
@@ -41,7 +42,6 @@ class ProductIndex(CelerySearchIndex, indexes.Indexable):
 
         @cached_as(Location,extra=locationName)
         def __getCorrdinates():
-            print '[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]'
             payload = {'address': locationName, 'components':'country:%s' % settings.GOOGLE_MAP_API_SEARCH_COUNTRY_CODE,'key': settings.GOOGLE_MAP_API_KEY}
             request = requests.get(settings.GOOGLE_MAP_API_RESUORCE_URL, params=payload)
             result = request.json()
@@ -61,6 +61,19 @@ class ProductIndex(CelerySearchIndex, indexes.Indexable):
         return dict(Product.PRODUCT_CONDITIONS).get(obj.condition)
 
     def prepare_previewImageURL(self,obj):
+        productImages = ProductImage.objects.filter(product__pk=obj.pk)
+        if productImages:
+            firstImage = productImages[0]
+            imageToSend = ProductImage.objects.get(pk=firstImage.pk)
+            url = imageToSend.image.url
+            pathWithoutExtension = url[0:url.find('.') - 1]
+            fileExtension = url[url.find('.') + 1:len(url)]
+            url =    "%s_%s.%s" % (pathWithoutExtension,'preview',fileExtension)
+            return url
+        else:
+            return None
+
+    def prepare_thumbnailImageURL(self,obj):
         productImages = ProductImage.objects.filter(product__pk=obj.pk)
         if productImages:
             firstImage = productImages[0]

@@ -1,0 +1,26 @@
+{% load humanize %}
+
+<div class="card">
+    <img class="card-img-top img-thumbnail" src="{{result.previewImageURL}}">
+    <div class="card-block">
+        <h6 class="card-title">{{result.title}}</h6>
+
+        <div class="card-text">
+            {% if result.price %}
+            <ul class="list-inline">
+                <li class="list-inline-item font-weight-bold">
+                    Rs:{% if result.price > 100000 %}
+                    {{result.price|intcomma}}
+                    {% else %}
+                    {{result.price|intword}}
+                    {% endif %}
+                </li>
+                {% if result.exchangeable %}
+                <li class="list-inline-item"> <span class="tag tag-pill tag-default"><i class="fa fa-exchange" aria-hidden="true"></i> Exchangable</span></li>
+                {% endif %}
+                <li><small>{{result.postedDate|naturaltime}}</small></li>
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+</div>

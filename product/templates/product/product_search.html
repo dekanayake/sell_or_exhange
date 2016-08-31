@@ -152,8 +152,13 @@
         <div class="col-sm-9 p-l-0">
             <div class="card card-block">
                 <div class="row">
-                    <div class="col-sm-6"></div>
-                    <div class="col-sm-2"></div>
+                    <div class="col-sm-4 pull-left">
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <a class="btn  btn-secondary {% if display_mode == 'list' %} active  {% endif %}" href="{{display_mode_url}}&display_mode=list"><i class="fa fa-list" aria-hidden="true"> </i> List</a>
+                            <a class="btn btn-secondary {% if display_mode == 'gallery' %} active  {% endif %}" href="{{display_mode_url}}&display_mode=gallery"><i class="fa fa-th-large" aria-hidden="true"> </i> Gallery</a>
+                        </div>
+                    </div>
+
                     <div class="col-sm-4 pull-right">
                         <div class="form-inline">
                             <div class="form-group">
@@ -170,9 +175,11 @@
             </div>
 
 
-        {% for result in page_obj.object_list %}
-            {% include "product/product_search/product_row.html" with result=result %}
-        {% endfor %}
+        {% if display_mode = "list" %}
+            {% include "product/product_search/product_list_view.html" %}
+        {% elif display_mode = "gallery" %}
+            {% include "product/product_search/product_grid_view.html" with result=result %}
+        {% endif %}
 
         {% if paginate %}
           <div class="text-xs-center">
