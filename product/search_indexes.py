@@ -71,7 +71,7 @@ class ProductIndex(CelerySearchIndex, indexes.Indexable):
             url =    "%s_%s.%s" % (pathWithoutExtension,'preview',fileExtension)
             return url
         else:
-            return None
+            return 'NONE'
 
     def prepare_thumbnailImageURL(self,obj):
         productImages = ProductImage.objects.filter(product__pk=obj.pk)
@@ -84,7 +84,7 @@ class ProductIndex(CelerySearchIndex, indexes.Indexable):
             url =    "%s_%s.%s" % (pathWithoutExtension,'thumbnail',fileExtension)
             return url
         else:
-            return None
+            return 'NONE'
 
 
 

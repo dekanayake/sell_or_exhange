@@ -37,12 +37,21 @@ class ProductSearchView(BaseFacetedSearchView):
 
     def get_queryset(self):
         qs = super(ProductSearchView, self).get_queryset()
-        selected_facets = list(set(map(lambda i:  i.split(':',1)[0],self.request.GET.getlist("selected_facets"))))
+        selected_facets = dict(map(lambda i:  (i.split(':',1)[0],i.split(':',1)[1]),self.request.GET.getlist("selected_facets")))
         selected_category = self.request.GET.get('category')
 
         if (selected_category) or ('category_exact' in selected_facets):
-            for facet_field in ['category','condition','brand','variants']:
-                qs = qs.facet(facet_field)
+            if not selected_category:
+                selected_category = selected_facets['category_exact']
+
+            if selected_category != "-1":
+                loadedCategory = ProductSearchView.__loadCategory(selected_category)
+            if selected_category == "-1" or loadedCategory.category_set.all():
+                for facet_field in ['category','condition']:
+                    qs = qs.facet(facet_field)
+            else:
+                for facet_field in ['category','condition','brand','variants']:
+                    qs = qs.facet(facet_field)
 
 
 
@@ -76,6 +85,15 @@ class ProductSearchView(BaseFacetedSearchView):
         ProductSearchView.__updatePageRowViewModeContext(self.request,context)
 
         return context
+
+    @staticmethod
+    def __loadCategory(category_id):
+
+        @cached_as(Category, extra=category_id)
+        def __loadCategoryFromCache():
+           return Category.objects.get(pk=long(category_id))
+
+        return __loadCategoryFromCache()
 
     @staticmethod
     def __updatePageRowViewModeContext(request,context):

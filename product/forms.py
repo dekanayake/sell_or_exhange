@@ -139,6 +139,11 @@ class ProductSearchForm(FacetedSearchForm):
                 max_dist = D(mi=35)
                 sqs =  sqs.dwithin('geoLocation', user_location, max_dist)
 
+
+
+
+
+
         or_facets = {}
         for facet in self.selected_facets_or:
             if ":" not in facet:
