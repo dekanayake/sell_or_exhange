@@ -250,7 +250,7 @@ class ProductSearchView(BaseFacetedSearchView):
             selected_location = selected_facets['location_exact']
 
         if not selected_location:
-            selected_category = request.GET.get('location')
+            selected_location = request.GET.get('location')
 
 
         @cached_as(Location, extra=selected_location)

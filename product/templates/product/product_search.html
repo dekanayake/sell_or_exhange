@@ -65,9 +65,9 @@
                                     </select>
 
                                     {% if search_around_enable %}
-                                         <a class="btn btn-warning" id="searchByGeoLocationBtn" data-url="{{search_around_url}}" role="button"> <i class="fa fa-location-arrow" aria-hidden="true"></i></a>
+                                         <a class="btn btn-warning" id="searchByGeoLocationBtn" data-enable="false" data-url="{{search_around_url}}" role="button"> <i class="fa fa-location-arrow" aria-hidden="true"></i></a>
                                     {% else %}
-                                         <a class="btn btn-secondary" id="searchByGeoLocationBtn" data-url="{{search_around_url}}" role="button"> <i class="fa fa-location-arrow" aria-hidden="true"></i></a>
+                                         <a class="btn btn-secondary" id="searchByGeoLocationBtn" data-enable="true" data-url="{{search_around_url}}" role="button"> <i class="fa fa-location-arrow" aria-hidden="true"></i></a>
                                     {% endif %}
 
 
@@ -92,7 +92,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card card-block">
-                "{{form.q.value}}" in {{selected_category.1}} | {{page_obj.paginator.count}}
+                "{{form.q.value}}" {% if selected_category %} in {{selected_category.1}} {% endif %}  {% if selected_location %}in {{selected_location.1}} {% endif %} {% if search_around_enable %} in near to my place {% endif%} | {{page_obj.paginator.count}} ads
             </div>
         </div>
     </div>
@@ -237,38 +237,46 @@
         });
 
         $('#searchByGeoLocationBtn').bind('click',function() {
-           		var source = Rx.DOM.geolocation.getCurrentPosition({timeout:60000});
+               var enable = $("#searchByGeoLocationBtn").data("enable");
+               if (enable == "true") {
+                    var source = Rx.DOM.geolocation.getCurrentPosition({timeout:60000});
 
-           		  var subscription = source.subscribe(
-                  function (pos) {
-                    Pace.options = {
-                        ajax:false,
-                        document:false
-                    }
-                    Pace.start();
-                    var url = $("#searchByGeoLocationBtn").data("url");
-                    coords = pos.coords.longitude + ',' + pos.coords.latitude;
-                    url = url.concat('&search_around=' + escape(coords));
+                      var subscription = source.subscribe(
+                      function (pos) {
+                        Pace.options = {
+                            ajax:false,
+                            document:false
+                        }
+                        Pace.start();
+                        var url = $("#searchByGeoLocationBtn").data("url");
+                        coords = pos.coords.longitude + ',' + pos.coords.latitude;
+                        url = url.concat('&search_around=' + escape(coords));
 
-                     window.location.href = url;
-                  },
-                  function (err) {
-                    var message = '';
-                    switch (err.code) {
-                      case err.PERMISSION_DENIED:
-                        setErrorToNearByButton();
-                        break;
-                      case err.POSITION_UNAVAILABLE:
-                        setErrorToNearByButton();
-                        break;
-                      case err.PERMISSION_DENIED_TIMEOUT:
-                        setErrorToNearByButton();
-                        break;
-                    }
-                  },
-                  function () {
-                    Pace.stop();
-                  });
+                        window.location.href = url;
+                      },
+                      function (err) {
+                        var message = '';
+                        switch (err.code) {
+                          case err.PERMISSION_DENIED:
+                            setErrorToNearByButton();
+                            break;
+                          case err.POSITION_UNAVAILABLE:
+                            setErrorToNearByButton();
+                            break;
+                          case err.PERMISSION_DENIED_TIMEOUT:
+                            setErrorToNearByButton();
+                            break;
+                        }
+                      },
+                      function () {
+                        Pace.stop();
+                      });
+               } else {
+                      var url = $("#searchByGeoLocationBtn").data("url");
+                      window.location.href = url;
+               }
+
+
 
         });
 
