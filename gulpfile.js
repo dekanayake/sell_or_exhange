@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var gnf = require('gulp-npm-files');
+var sass = require('gulp-sass');
 
 
 gulp.task('copy-npmdependencies', function() {
@@ -14,3 +15,10 @@ gulp.task('copy-nonNpmdependencies', function() {
   ],{ 'base' : './nonNPMDependencies' })
    .pipe(gulp.dest('vendor'));
 });
+
+gulp.task( 'styles', function () {
+          return gulp.src('./vendor/progress-tracker/app/styles/*.scss')
+            .pipe(sass().on('error', sass.logError))
+            .pipe(gulp.dest('./vendor/progress-tracker/css4'));
+} );
+

@@ -14,6 +14,14 @@ Add product
 
     <div class="row">
 
+
+        {% include "product/productCreateWorkflowProgressBar.html" with activeStep=1 %}
+
+
+    </div>
+
+    <div class="row">
+
         <div class="card">
             <div class="card-block">
 
@@ -58,7 +66,7 @@ Add product
                 <div class="panel-body">
 
 
-                 <form   action="/products/addProduct/{{selectedCategory.id}}/{{selectedLocation.id}}/{{randomNumber}}" method="post" enctype="multipart/form-data" id="productForm">
+                 <form   action="/products/addProduct/{{selectedCategory.id}}/{{selectedLocation.id}}/{{randomNumber}}" method="post" enctype="multipart/form-data" id="productForm" data-form-status="{{status}}">
                      {% csrf_token %}
 
                      <div class="form-group row required {% if form.condition.errors%} has-danger {% endif %}">
@@ -365,8 +373,32 @@ $(document).ready(function(){
           clickable: "#upload", // Define the element that should be used as click trigger to select files.
           headers: { 'X-CSRFToken': $("input[name='csrfmiddlewaretoken']" ).val()},
           renameFilename: function (filename) {
-            return Math.random().toString(36).substring(7) + '_' + filename;
-           }
+            var formStatus = $("#productForm").data("form-status");
+            if (formStatus == 'update'){
+                return filename;
+            } else {
+                return Math.random().toString(36).substring(7) + '_' + filename;
+            }
+
+           },
+          init: function() {
+              var myDropZoneInstance = this;
+              $.ajax({
+                    type: 'GET',
+                    url: '/products/getUploadedImageFiles/{{randomNumber}}',
+                    success: function(result) {
+                        for (i=0;i<result.length;i++){
+                             var image = result[i];
+                             var mockFile = { name: image.fileName, size: image.size };
+                             myDropZoneInstance.options.addedfile.call(myDropZoneInstance, mockFile);
+                             myDropZoneInstance.options.thumbnail.call(myDropZoneInstance, mockFile, '/products/getTmpProductImage/' + image.imageId);
+                        }
+                    },
+                    headers: {
+                        'X-CSRFToken': $("input[name='csrfmiddlewaretoken']" ).val()
+                        }
+                });
+          }
         });
 
          myDropzone.on("sendingmultiple", function() {
@@ -389,6 +421,9 @@ $(document).ready(function(){
 
            myDropzone.on("removedfile", function(file) {
                 var server_file = $(file.previewTemplate).data('server_file');
+                if (!server_file){
+                    server_file = file.name;
+                }
                 $.ajax({
                     type: 'POST',
                     url: '/products/tmpProductImages/{{randomNumber}}',
@@ -402,6 +437,8 @@ $(document).ready(function(){
                         }
                 });
            });
+
+
 
 
 

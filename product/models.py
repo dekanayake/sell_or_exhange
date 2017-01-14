@@ -6,6 +6,7 @@ from django.dispatch import receiver
 import os
 from django.conf import settings
 from PIL import Image, ImageChops, ImageOps
+from django.contrib.auth.models import User
 import shutil
 import logging
 
@@ -34,6 +35,65 @@ class Category(models.Model):
             output = " > ".join(list(reversed(categoryArray)))
 
         return output
+
+    def __str__(self):
+        return self.getCategoryLabel()
+
+
+    def getCategoryLabel(self):
+        categoryArray = []
+        currentCategory = self
+
+        while (currentCategory is not None):
+            categoryArray.append(currentCategory.name)
+            currentCategory = currentCategory.parentCategory
+
+        output = ""
+        if (len(categoryArray) == 1):
+            output = categoryArray[0]
+        else:
+            output = " > ".join(list(reversed(categoryArray)))
+
+        return output
+
+def generate_profile_image_filename(instance, filename):
+    url = "images/profile/%s" % (filename)
+    return url
+
+class Profile(models.Model):
+    PROFILE_TYPE = (
+        ('USER','User'),
+        ('SHOP','Shop')
+    )
+    name = models.CharField(max_length=300)
+    contactNumber = models.CharField(max_length=100)
+    contactEmail = models.CharField(max_length=100)
+    type = models.CharField(max_length=10, choices=PROFILE_TYPE),
+    image = models.FileField(upload_to=generate_profile_image_filename,null=True,blank=True)
+
+class SingleUser(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+class Shop(models.Model):
+    address_line1 = models.CharField(max_length=500, blank=True, null=True)
+    address_line2 = models.CharField(max_length=500, blank=True, null=True)
+    location =  models.CharField(max_length=100)
+    geoLocation = models.CharField(max_length=100)
+    url = models.CharField(max_length=500, blank=True, null=True)
+    faceBookUrl = models.CharField(max_length=500, blank=True, null=True)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+
+class ShopAuthAdminUsers(models.Model):
+    shop = models.ForeignKey(Shop)
+    users = models.ManyToManyField(User)
+
+class ShopAuthUsers(models.Model):
+    shop = models.ForeignKey(Shop)
+    users = models.ManyToManyField(User)
+
+
 
 class Location(models.Model):
     name = models.CharField(max_length=300)
@@ -94,6 +154,7 @@ class Product(models.Model):
 def generate_product_image_filename(instance, filename):
     url = "images/prod/%s/%s" % (instance.product.pk, filename)
     return url
+
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -183,6 +244,12 @@ def temp_product_image_post_delete_handler(sender, **kwargs):
     storage, path = productImage.image.storage, productImage.image.path
     storage.delete(path)
 
+    pathWithoutExtension = path[0:path.find('.') - 1]
+    fileExtension = path[path.find('.') + 1:len(path)]
+
+    thumbnailPath = "%s_thumbnail.%s" % (pathWithoutExtension,fileExtension)
+    storage.delete(thumbnailPath)
+
     parentPath = "%s/images/tempory/%s" % (settings.MEDIA_ROOT,productImage.key)
     if not os.listdir(parentPath):
         os.rmdir(parentPath)
@@ -204,6 +271,21 @@ def photo_image_post_save_handler(sender, **kwargs):
 
     previewPath = "%s_preview.%s" % (pathWithoutExtension,fileExtension)
     __makeThumb(path, previewPath, (612,460))
+
+
+@receiver(post_save, sender=TemporyProductImage)
+def tmp_photo_image_post_save_handler(sender, **kwargs):
+    tmpProductImage = kwargs['instance']
+    path =  tmpProductImage.image.path
+
+    pathWithoutExtension = path[0:path.find('.') - 1]
+    fileExtension = path[path.find('.') + 1:len(path)]
+
+    im = Image.open(path)
+
+    thumbnailPath = "%s_thumbnail.%s" % (pathWithoutExtension,fileExtension)
+    __makeThumb(path, thumbnailPath, (136,136))
+
 
 
 def __makeThumb(f_in, f_out, size=(80,80)):

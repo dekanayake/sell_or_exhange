@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load common_tags %}
+
+{% block title %}
+Add profile
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="block">
+            <div class="card-block">
+               <form id="profileForm" action="/products/profile" method="post" enctype="multipart/form-data">
+                   {% csrf_token %}
+                   <div class="form-group row required {% if form.type.errors%} has-danger {% endif %}">
+                       <label class="col-sm-2 form-control-label" >{{form.type.label}}</label>
+                       <div class="col-sm-6">
+                           <div class="row">
+                               <div class="col-sm-12" id="type_inputs">
+
+                                   {% for choice in form.type.field.choices %}
+
+                                    <div class="form-check">
+                                           <label class="form-check-label">
+                                               <input class="form-check-input" type="radio" name="{{ form.type.html_name }}" {% if choice.0 in form.type.value or type == choice.0 %} checked="checked" {% endif %} id="{{ form.type.html_name }}" value="{{choice.0}}">
+                                               {{choice.1}}
+                                           </label>
+                                    </div>
+
+
+                                   {% endfor %}
+                               </div>
+                           </div>
+
+                           {% errors form.type.errors %}
+                       </div>
+
+                   </div>
+
+                   {% if type == "SHOP" or form.type.value = "SHOP"%}
+
+                   <div class="form-group row required  {% if form.shop_name.errors%} has-danger {% endif %}">
+                       <label  class="col-sm-2 form-control-label" >{{form.shop_name.label}}</label>
+
+                       <div class="col-sm-6">
+                           <div class="row">
+                               <div class="col-sm-12">
+                                   {{ form.shop_name|attr:"class:form-control"|attr:"placeholder:Shop name" }}
+                               </div>
+                           </div>
+                           {% errors form.shop_name.errors %}
+                       </div>
+                   </div>
+
+                   {% endif %}
+
+                   <div class="form-group row required  {% if form.email.errors%} has-danger {% endif %}">
+                       <label  class="col-sm-2 form-control-label" >{{form.email.label}}</label>
+
+                       <div class="col-sm-6">
+                           <div class="row">
+                               <div class="col-sm-12">
+                                   <input class="form-control" type="email"  value="{{ form.email.value|default_if_none:'' }}" id="{{form.email.id_for_label}}" name="{{form.email.html_name}}" placeholder="Email address">
+                               </div>
+                           </div>
+                           {% errors form.email.errors %}
+                       </div>
+                   </div>
+
+
+                   <div class="form-group row required  {% if form.user_name.errors%} has-danger {% endif %}">
+                       <label  class="col-sm-2 form-control-label" >{{form.user_name.label}}</label>
+
+                       <div class="col-sm-6">
+                           <div class="row">
+                               <div class="col-sm-12">
+                                   {{ form.user_name|attr:"class:form-control"|attr:"placeholder:User name" }}
+                               </div>
+                           </div>
+                           {% errors form.user_name.errors %}
+                       </div>
+                   </div>
+
+                   <div class="form-group row required {% if form.password1.errors%} has-danger {% endif %}">
+                       <label  class="col-sm-2 form-control-label">{{form.password1.label}}</label>
+
+                       <div class="col-sm-6">
+                           <div class="row">
+                               <div class="col-sm-12">
+                                   {{ form.password1|attr:"class:form-control"|attr:"placeholder:Password" }}
+                               </div>
+                           </div>
+                           {% errors form.password1.errors %}
+                       </div>
+                   </div>
+
+                   <div class="form-group row required {% if form.password2.errors%} has-danger {% endif %}">
+                       <label  class="col-sm-2 form-control-label">{{form.password2.label}}</label>
+
+                       <div class="col-sm-6">
+                           <div class="row">
+                               <div class="col-sm-12">
+                                   {{ form.password2|attr:"class:form-control"|attr:"placeholder:Retype password" }}
+                               </div>
+                           </div>
+                           {% errors form.password2.errors %}
+                       </div>
+
+                   </div>
+
+                   <div class="form-group row {% if form.contact_number.errors%} has-danger {% endif %}" >
+                       <label  class="col-sm-2 form-control-label">{{form.contact_number.label}}</label>
+
+                       <div class="col-sm-6">
+                           <div class="row">
+                               <div class="col-sm-12">
+                                   <input class="form-control" type="tel" value="{{form.contact_number.value|default_if_none:''}}" name="{{form.contact_number.html_name}}" id="{{form.contact_number.id_for_label}}" placeholder="Contact number">
+                               </div>
+                           </div>
+                       </div>
+                       {% errors form.contact_number.errors %}
+                   </div>
+
+                   {% if type == "SHOP" or form.type.value = "SHOP"%}
+
+                       <div class="form-group row {% if form.shop_location.errors%} has-danger {% endif %}">
+                           <label  class="col-sm-2 form-control-label">Shop Address</label>
+
+                           <div class="col-sm-6">
+                               <div class="row">
+                                   <div class="col-sm-12">
+                                       {{ form.shop_address1|attr:"class:form-control"|attr:"placeholder:Street address 1" }}
+                                   </div>
+                               </div>
+                           </div>
+
+                       </div>
+
+                       <div class="form-group row {% if form.shop_location.errors%} has-danger {% endif %}">
+
+                           <div class="col-sm-6 offset-sm-2">
+                               <div class="row">
+                                   <div class="col-sm-12">
+                                       {{ form.shop_address2|attr:"class:form-control"|attr:"placeholder:Street address 2" }}
+                                   </div>
+                               </div>
+                           </div>
+
+                       </div>
+
+                       <div class="form-group row {% if form.shop_location.errors%} has-danger {% endif %}">
+                           <div class="col-sm-4 offset-sm-2">
+                               <div class="row">
+                                   <div class="col-sm-12">
+                                       <select class="form-control" name="{{ form.shop_location.html_name }}" id="{{ form.shop_location.id_for_label }}"  >
+                                           {% if  not form.shop_location.value %}<option value="-1" disabled selected hidden>City</option> {% endif %}
+                                           {% for location in form.shop_location.field.choices %}
+                                                <option value="{{location.0}}" {% if  form.shop_location.value == location.0|slugify %} selected {% endif %}> {{location.1}}</option>
+                                           {% endfor %}
+                                       </select>
+                                   </div>
+                               </div>
+
+                           </div>
+                           <div class="col-sm-10 offset-sm-2">
+                               {% errors form.shop_location.errors %}
+                           </div>
+
+                       </div>
+
+                   {% endif %}
+
+                   <div class="form-group row ">
+                       <label  class="col-sm-2 form-control-label">{{form.image.label}}</label>
+
+                       <div class="col-sm-4">
+                           <div class="row">
+                               <div class="col-sm-12">
+                                   <label class="custom-file">
+                                       <input type="file" id="{{form.image.html_name}}" id="{{form.image.id_for_label}}" class="custom-file-input">
+                                       <span class="custom-file-control"></span>
+                                   </label>
+                               </div>
+                               <div class="col-sm-6">
+                                   <div class="invisible" id="uploaded_image">
+                                       <img  {% if imageFile %} src="{{imageFile}}" {% endif %} id="imagePreview" alt="..." class="img-thumbnail">
+
+                                   </div>
+
+                               </div>
+                           </div>
+                       </div>
+
+                   </div>
+
+                   <div class="form-group row">
+                       <label  class="col-sm-2 form-control-label"></label>
+                       <div class="col-sm-4">
+                           <button type="submit" class="btn btn-primary" id="submitButton">Save</button>
+                       </div>
+                   </div>
+
+
+               </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block jscontent%}
+
+<script type="text/javascript">
+
+    function readURL(input) {
+
+        if (input.files && input.files[0]) {
+            $("#uploaded_image").toggleClass("invisible");
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#imagePreview').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+
+
+        }
+    }
+
+    $("#{{form.image.html_name}}").change(function(){
+        readURL(this);
+    });
+
+    $("#type_inputs input").on('change', function() {
+        var type = $('input[id={{form.type.html_name}}]:checked', '#profileForm').val();
+         window.location.href = '{{type_url}}?type='+type;
+    });
+
+    $('#id_password1').strengthify({
+        zxcvbn: '/static/zxcvbn/dist/zxcvbn.js',
+        "drawTitles": false,
+        "drawMessage": false,
+        "drawBars": true
+        });
+
+
+
+</script>
+
+{% endblock%}
+

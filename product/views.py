@@ -84,6 +84,15 @@ def add_product(request,selected_category_id, selected_location_id,random_key = 
         productForm =  ProductForm(category=long(selected_category_id))
         return render(request, 'product/addProduct.html', {'selectedCategory':selectedCategory,'selectedLocation':selectedLocation,'form':productForm,'randomNumber':random_number})
 
+def update_product(request,product_id):
+    productInstance = Product.objects.get(pk=product_id)
+    selectedCategory = Category.objects.get(pk= long(productInstance.category.id))
+    selectedLocation = Location.objects.get(pk= long(productInstance.location.id))
+    productForm = ProductForm(instance=productInstance,category=long(productInstance.category.id))
+    __create_temp_product_images_from_images_of_saved_product(productInstance.pk)
+    return render(request, 'product/addProduct.html', {'selectedCategory':selectedCategory,'selectedLocation':selectedLocation,'form':productForm,'randomNumber':productInstance.pk,'status':'update'})
+
+
 def show_product(request,product_id):
     loadedProduct = Product.objects.get(pk=product_id)
     loadedProductDataList = ProductData.objects.filter(product__pk=product_id)
@@ -120,6 +129,25 @@ def temp_product_images(request,random_number):
         TemporyProductImage.objects.get(key=random_number,fileName=fileNameToDelete).delete()
         return HttpResponse(status=200)
 
+
+def __create_temp_product_images_from_images_of_saved_product(product_id):
+    TemporyProductImage.objects.filter(key=product_id).delete()
+
+    savedProductImages = ProductImage.objects.filter(product__pk=product_id)
+    for savedProductImage in savedProductImages:
+        tmpFile =   TemporyProductImage()
+        tmpFile.key =  product_id
+        tmpFile.fileName = savedProductImage.fileName
+        tmpFile.image.save(savedProductImage.fileName,ContentFile(savedProductImage.image.read()), save=True)
+
+def get_uploaded_image_files(request, productID):
+    temportProductImages = TemporyProductImage.objects.filter(key=productID)
+    tempryImageIDArray = []
+    for temporyProductImage in temportProductImages:
+        tempryImageIDArray.append({'fileName' : temporyProductImage.fileName,'imageId' : temporyProductImage.pk, 'size': temporyProductImage.image.size})
+    return  JsonResponse(tempryImageIDArray, safe=False)
+
+
 def product_images(request,imagePK,type):
     imageToSend = ProductImage.objects.get(pk=imagePK)
     storage, path = imageToSend.image.storage , imageToSend.image.path
@@ -134,7 +162,15 @@ def product_images(request,imagePK,type):
     return HttpResponse(storage.open(requestedPath).read(), content_type="image/jpeg")
 
 
+def tempory_product_image_thumbnail(request,imagePK):
+    temporyImageToSend = TemporyProductImage.objects.get(pk=imagePK)
+    storage, path = temporyImageToSend.image.storage , temporyImageToSend.image.path
+    pathWithoutExtension = path[0:path.find('.') - 1]
+    fileExtension = path[path.find('.') + 1:len(path)]
 
+    requestedPath =    "%s_%s.%s" % (pathWithoutExtension,'thumbnail',fileExtension)
+
+    return HttpResponse(storage.open(requestedPath).read(), content_type="image/jpeg")
 
 
 def __saveProduct(productForm, selectedCategory,selectedLocation, randomKey):

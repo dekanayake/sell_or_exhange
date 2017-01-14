@@ -14,15 +14,18 @@
     "rx": "^4.1.0",
     "rx-dom": "git+https://github.com/Reactive-Extensions/RxJS-DOM.git",
     "slick-carousel": "^1.6.0",
-    "tether": "^1.3.2"
+    "tether": "^1.3.2",
+    "zxcvbn": "^4.3.0"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
-    "gulp-npm-files": "^0.1.3"
+    "gulp-npm-files": "^0.1.3",
+    "gulp-sass": "^3.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "copy": "gulp copy-npmdependencies copy-nonNpmdependencies",
+    "styles": "gulp styles",
     "install": "gulp copy-dependencies"
   },
   "author": "",
