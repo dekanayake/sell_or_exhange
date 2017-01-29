@@ -13,6 +13,7 @@ we are using python venv , so we can keep all the project dependencies in a sing
 
 sudo apt-get install virtualenv
 pip install --user virtualenvwrapper
+
 source venv/bin/activate
 
 ### installing and using venv in windows ###
