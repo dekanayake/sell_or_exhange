@@ -7,6 +7,10 @@ We are using python 2.7
 
 ## Installing virtual environment ##
 
+sudo apt-get install python-pip
+
+## Installing virtual environment ##
+
 we are using python venv , so we can keep all the project dependencies in a single virtual machine.
 
 ### installing and using venv in ubuntu ###
