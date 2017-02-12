@@ -12,7 +12,8 @@ sudo apt-get install python-pip
 ## Installing virtual environment ##
 
 we are using python venv , so we can keep all the project dependencies in a single virtual machine.
-http://docs.python-guide.org/en/latest/dev/virtualenvs/
+
+More information : http://docs.python-guide.org/en/latest/dev/virtualenvs/
 
 ### installing and using venv in ubuntu ###
 
@@ -50,6 +51,7 @@ workon [venvname]
 
 ## Installing mysql ##
 
+* sudo apt-get install libmysqlclient-dev
 * pip install mysqlclient
 
 
