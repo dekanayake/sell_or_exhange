@@ -307,13 +307,14 @@ Add product
                          </div>
                      </div>
 
-                     <div class="form-group row">
+                     <div class="form-group row required">
                          <label  class="col-sm-2 form-control-label">Email</label>
 
                          <div class="col-sm-3">
                                  {{ form.email|attr:"class:form-control"|attr:"placeholder:Email" }}
 
                          </div>
+                         {% errors form.email.errors %}
                      </div>
 
 

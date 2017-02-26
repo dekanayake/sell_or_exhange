@@ -149,7 +149,7 @@ class Product(models.Model):
     status = models.CharField(max_length=20, choices=PRODUCT_STATUS,editable=False)
     postedDate = models.DateTimeField()
     contactNumber = models.CharField(max_length=10,null=True, blank=True)
-    email = models.CharField(max_length=100 ,null=True, blank=True)
+    email = models.CharField(max_length=100 )
 
 def generate_product_image_filename(instance, filename):
     url = "images/prod/%s/%s" % (instance.product.pk, filename)

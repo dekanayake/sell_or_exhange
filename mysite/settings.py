@@ -114,7 +114,7 @@ BROKER_URL = 'redis://localhost:6379/0'
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
-        'URL': 'http://127.0.0.1:8983/solr/product'
+        'URL': 'http://127.0.0.1:8983/solr/products'
         # ...or for multicore...
         # 'URL': 'http://127.0.0.1:8983/solr/mysite',
     },
@@ -128,7 +128,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {
-            'read_default_file': '/home/duminda/Development/sell_or_exchange/mysite/mysite/conf/my.cnf',
+            'read_default_file': '/home/duminda/Development/sell_or_exchange/code/sell_or_exchange/mysite/conf/my.cnf',
         },
     }
 }
@@ -146,7 +146,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-MEDIA_ROOT='/home/duminda/Development/sell_or_exchange/mysite/media'
+MEDIA_ROOT='/home/duminda/Development/sell_or_exchange/code/sell_or_exchange/mysite/media'
 MEDIA_URL='/media/'
 
 

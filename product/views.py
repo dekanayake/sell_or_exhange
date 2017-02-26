@@ -69,7 +69,6 @@ def select_location(request,location_id="-1"):
 
 
 def add_product(request,selected_category_id, selected_location_id,random_key = -1):
-    random_number = random.getrandbits(128)
     selectedCategory = Category.objects.get(pk= long(selected_category_id))
     selectedLocation = Location.objects.get(pk= long(selected_location_id))
     if request.method == 'POST':
@@ -78,9 +77,11 @@ def add_product(request,selected_category_id, selected_location_id,random_key = 
             productId = __saveProduct(form, selectedCategory, selectedLocation, random_key)
             return redirect('show_product', product_id = productId)
         else:
-            return render(request, 'product/addProduct.html', {'selectedCategory':selectedCategory,'form':form})
-
+            logging.warning('---------------------------------------------------------')
+            logging.warning(random_key)
+            return render(request, 'product/addProduct.html', {'selectedCategory':selectedCategory,'selectedLocation':selectedLocation,'form':form,'randomNumber':random_key})
     else:
+        random_number = random.getrandbits(128)
         productForm =  ProductForm(category=long(selected_category_id))
         return render(request, 'product/addProduct.html', {'selectedCategory':selectedCategory,'selectedLocation':selectedLocation,'form':productForm,'randomNumber':random_number})
 

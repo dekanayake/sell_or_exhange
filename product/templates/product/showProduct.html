@@ -13,7 +13,7 @@ Add product
     <div class="row">
 
 
-        {% include "product/productCreateWorkflowProgressBar.html" with activeStep=2 completedStep=1 %}
+        {% include "product/productCreateWorkflowProgressBar.html" with activeStep=2 completedStep=1 isEdit=True%}
 
 
     </div>
@@ -103,6 +103,18 @@ Add product
                     </div>
                     <div class="card-block">
                         <div  id="description"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="card">
+                    <div class="card-block">
+                    <a  href="#"  class="btn btn-primary" role="button">OK</a>
+
+                    <a href="{% url 'update_product' product.id %}"  class="btn btn-warning" role="button" >Edit</a>
                     </div>
                 </div>
 
