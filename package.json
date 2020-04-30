@@ -8,7 +8,7 @@
     "dropzone": "^4.3.0",
     "font-awesome": "^4.6.3",
     "jQuery-Geolocation": "git+https://github.com/manuelbieh/jQuery-Geolocation.git",
-    "jquery": "2.2.4",
+    "jquery": "3.5.0",
     "jquery-zoom": "^1.7.15",
     "jssocials": "^1.2.1",
     "rx": "^4.1.0",
